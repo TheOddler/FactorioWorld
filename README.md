@@ -4,6 +4,8 @@ A mod for factorio that changes the map into a real-world map.
 
 Note that it only changes the terrain, and not the spawning of trees and resources.
 
+**WARNING**: This mod seems to make memory usage spike when saving. This can make you pc very slow for a while and sometimes even hang!
+
 # The Mod
 
 ## Installation
