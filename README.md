@@ -18,6 +18,11 @@ Note: The folders "Screenshots" and "MapGenerator" aren't strictly needed to ins
 
 Simply start a new game, you should then start in England.
 
+Note that it can take a long time to load all the required data.
+This means your game will hang for a while when starting a map.
+To see progress of the loading run your game from the console (so you can see debug messages).
+In steam add "cmd /c %command%" to your launch options, as this will also show the console.
+
 ## Limitations
 
 * Currently only grass, water and dirt is generated
