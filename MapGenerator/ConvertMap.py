@@ -24,7 +24,7 @@ def get_terrain_letter(pixel):
     if b == max(r, g, b):
         return deepwater
 
-# Convert image to text for lua
+# Line converts
 def convert_line_full_text(im, y, width):
     line = ""
     for x in range(0, width):
@@ -51,11 +51,7 @@ def convert_line_custom_compressed(im, y, width):
     line += str(current_count)
     return line
 
-def convert_line_compressed(im, y, width):
-    line = convert_line_full_text(im, y, width)
-    
-    return line
-
+# Writers
 def write_as_txt(lines, output_name):
     output = open(output_name, 'w')
     for line in lines:
@@ -69,6 +65,7 @@ def write_as_lua_array(lines, output_name):
     output.write("\t\"%s\"\n" % lines[-1]) #last one without comma
     output.write("}")
 
+# Actual conversion code
 def convert(name, output_name, line_conversion_method = convert_line_custom_compressed, write_method = write_as_lua_array):
     print("Converting: ", name)
     Image.MAX_IMAGE_PIXELS = 1000000000 #large enough to allow huge map
