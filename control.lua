@@ -3,7 +3,7 @@ require "map_100_compressed"
 --Settings
 local offset = {x = 2000 * 4, y = 400 * 4}
 
---Terrain codes
+--Terrain codes should be in sync with the ConvertMap code
 local terrain_codes = {
     ["_"] = "out_of_map",
     ["o"] = "deepwater",--ocean
@@ -69,7 +69,6 @@ local function on_chunk_generated(event)
     local tiles = {}
     for y = lt.y, rb.y-1 do
         for x = lt.x, rb.x-1 do
-            --table.insert(tiles, {name=temp_name, position={x,y}})
             table.insert(tiles, {name=get_world_tile_name(x + offset.x, y + offset.y), position={x,y}})
         end
     end
