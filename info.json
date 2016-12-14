@@ -1,0 +1,10 @@
+{
+  "name": "factorio-world",
+  "version": "0.1.0",
+  "title": "Factorio World",
+  "author": "The Oddler",
+  "contact": "pablo.bollansee@gmail.com",
+  "description": "Mod that changes the world generation to be a real-world map.",
+  "factorio_version": "0.14",
+  "dependencies": ["base >= 0.4.1"]
+}
