@@ -18,11 +18,11 @@ sand_dark = "S"
 def get_terrain_letter(pixel):
     r, g, b = pixel
     if r == max(r, g, b):
-        return "d"
+        return dirt
     if g == max(r, g, b):
-        return "g"
+        return grass
     if b == max(r, g, b):
-        return "o"
+        return deepwater
 
 # Convert image to text for lua
 def convert_line_full_text(im, y, width):
