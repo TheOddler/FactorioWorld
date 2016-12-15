@@ -27,8 +27,6 @@ In steam add "cmd /c %command%" to your launch options, as this will also show t
 
 ## Limitations
 
-* Currently only grass, water and dirt is generated
-    * The mod is written to support everything, however the image-converter only supports those 3 for the moment.
 * You always start in England
 * The map should be infinite, many many times the same world next to eachother. However this is untested.
     * Actually, there hasn't been much testing yet, so there could be many bugs.
@@ -40,9 +38,7 @@ These files are generated based on images.
 Currently I'm using the "Natural Earth II with Shaded Relief, Water, and Drainages" image from [Natural Earth](http://www.naturalearthdata.com/downloads/10m-raster-data/10m-natural-earth-2/).
 
 The generator simply iterates over each pixel, and assigns a tile-type to it.
-Currently it only support grass, water and dirt.
-It simply makes the pixel grass if the green-channel is highest, water if the blue-channels wins and dirt if the red-channel is victorious.
-This is then encoded as "g" for grass, "w" for water and "d" for dirt.
+The algorithm uses reference colors, and checks which one is closer to encode the types.
 To compress the data a little I use a scheme where every tile-letter is followed by how many tiles there are of this type of that row.
 The mod then takes these strings (one for each line of pixels), decompresses it to something it can read very quickly, and assigns the tiles a new type when a chunk is generated.
 
