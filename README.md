@@ -46,6 +46,10 @@ This is then encoded as "g" for grass, "w" for water and "d" for dirt.
 To compress the data a little I use a scheme where every tile-letter is followed by how many tiles there are of this type of that row.
 The mod then takes these strings (one for each line of pixels), decompresses it to something it can read very quickly, and assigns the tiles a new type when a chunk is generated.
 
+## Require Python libraries
+
+* Pillow - `pip install Pillow`
+
 ## Usage
 
 Currently to generate a new lua file and load in into your you'll have to do a little manual labour:
