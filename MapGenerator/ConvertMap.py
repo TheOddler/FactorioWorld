@@ -1,28 +1,39 @@
 import os, sys
 from PIL import Image
+from tqdm import tqdm
 
 # Terrain codes
-out_of_map = "_"
-deepwater = "o" #ocean
-deepwater_green = "O"
-water = "w"
-water_green = "W"
-grass = "g"
-grass_medium = "m"
-grass_dry = "G"
-dirt = "d"
-dirt_dark = "D"
-sand = "s"
-sand_dark = "S"
+terrain_codes = [
+    #((0,0,0), "_", "out-of-map"), #don't generate this one
+    ((89,140,182), "o", "deepwater"), #ocean
+    #((24,39,14), "O", "deepwater-green"),
+    ((114,173,213), "w", "water"),
+    #((30,48,16), "W", "water-green"),
+    ((145,190,148), "g", "grass"),
+    ((180,205,165), "m", "grass-medium"),
+    ((212,218,174), "G", "grass-dry"),
+    ((220,220,217), "d", "dirt"),
+    ((154,149,135), "D", "dirt-dark"),
+    ((241,237,209), "s", "sand"),
+    ((227,203,188), "S", "sand-dark")
+]
+
+def color_color_distance(color1, color2):
+    r1, g1, b1 = color1
+    r2, g2, b2 = color2
+    return (r1-r2) ** 2 + (g1-g2) ** 2 + (b1-b2) ** 2
+    #rm = (r1+r2) / 2
+    #return (2+rm) * (r1-r2) ** 2 + 4 * (g1-g2) ** 2 + 3-rm * (b1-b2) ** 2
 
 def get_terrain_letter(pixel):
-    r, g, b = pixel
-    if r == max(r, g, b):
-        return dirt
-    if g == max(r, g, b):
-        return grass
-    if b == max(r, g, b):
-        return deepwater
+    min_dist = float("inf")
+    found_code = None
+    for color, code, _ in terrain_codes:
+        dist = color_color_distance(pixel, color)
+        if dist < min_dist:
+            min_dist = dist
+            found_code = code
+    return found_code
 
 # Line converts
 def convert_line_full_text(im, y, width):
@@ -73,15 +84,14 @@ def convert(name, output_name, line_conversion_method = convert_line_custom_comp
     print(im.format, im.size, im.mode)
     width, height = im.size
     lines = []
-    for y in range(0, height):
-        if y % (height / 100) == 0:
-            print("... ", int(y * 100 / height), "%")
+    for y in tqdm(range(0, height)):
         line = line_conversion_method(im, y, width)
         lines.append(line)
 
     write_method(lines, output_name)
     print("Conversion done.")
 
-convert("NE2_LR_LC_SR_W_DR_50.tif", "map_50_compressed.lua")
-
+image_location = os.path.join(sys.path[0], 'NE2_LR_LC_SR_W_DR_50.tif')
+output_location = os.path.join(sys.path[0], 'map_50_compressed.lua')
+convert(image_location, output_location)
 

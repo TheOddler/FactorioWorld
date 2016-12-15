@@ -1,22 +1,22 @@
-require "map_100_compressed"
+require "map_compressed"
 
 --Settings
-local offset = {x = 2000 * 4, y = 400 * 4}
+local offset = {x = 8300, y = 1760} --North Belgium
 
 --Terrain codes should be in sync with the ConvertMap code
 local terrain_codes = {
-    ["_"] = "out_of_map",
+    ["_"] = "out-of-map",
     ["o"] = "deepwater",--ocean
-    ["O"] = "deepwater_green",
+    ["O"] = "deepwater-green",
     ["w"] = "water",
-    ["W"] = "water_green",
+    ["W"] = "water-green",
     ["g"] = "grass",
-    ["m"] = "grass_medium",
-    ["G"] = "grass_dry",
+    ["m"] = "grass-medium",
+    ["G"] = "grass-dry",
     ["d"] = "dirt",
-    ["D"] = "dirt_dark",
+    ["D"] = "dirt-dark",
     ["s"] = "sand",
-    ["S"] = "sand_dark"
+    ["S"] = "sand-dark"
 }
 
 local function decompress_map_data()
@@ -24,12 +24,15 @@ local function decompress_map_data()
     local decompressed = {}
     local height = #map_data
     local width = nil
+    local last = -1
     for y = 0, height-1 do
         decompressed[y] = {}
         --debug info
-        if y % (height / 100) == 0 then
-            print("... ", math.floor(y * 100 / height), "%")
+        work = math.floor(y * 100 / height)
+        if work ~= last then --so it doesn't print the same percent over and over.
+            print("... ", work, "%")
         end
+        last = work
         --do decompression of this line
         local total_count = 0
         local line = map_data[y+1]
@@ -67,8 +70,8 @@ local function on_chunk_generated(event)
     print("Chunk generated: ", lt.x, lt.y, w, h)
 
     local tiles = {}
-    for y = lt.y, rb.y-1 do
-        for x = lt.x, rb.x-1 do
+    for y = lt.y, rb.y do
+        for x = lt.x, rb.x do
             table.insert(tiles, {name=get_world_tile_name(x + offset.x, y + offset.y), position={x,y}})
         end
     end

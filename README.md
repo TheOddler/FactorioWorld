@@ -49,6 +49,7 @@ The mod then takes these strings (one for each line of pixels), decompresses it 
 ## Require Python libraries
 
 * Pillow - `pip install Pillow`
+* tqdm - `pip install tqdm`
 
 ## Usage
 
