@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 # Terrain codes
 terrain_codes = [
-    #((0,0,0), "_", "out-of-map"), #don't generate this one
+    #((0,0,0), "_", "out-of-map"), #commented out those I don't want to generate
     ((89,140,182), "o", "deepwater"), #ocean
     #((24,39,14), "O", "deepwater-green"),
     ((114,173,213), "w", "water"),
@@ -17,6 +17,21 @@ terrain_codes = [
     ((241,237,209), "s", "sand"),
     ((227,203,188), "S", "sand-dark")
 ]
+
+#terrain_codes = [
+#    #((0,0,0), "_", "out-of-map"), #commented out those I don't want to generate
+#    ((220,220,254), "o", "deepwater"), #ocean
+#    #((24,39,14), "O", "deepwater-green"),
+#    ((246,241,254), "w", "water"),
+#    #((30,48,16), "W", "water-green"),
+#    ((102,184,47), "g", "grass"),
+#    ((141,187,59), "m", "grass-medium"),
+#    ((175,209,69), "G", "grass-dry"),
+#    ((209,194,61), "d", "dirt"),
+#    ((184,116,46), "D", "dirt-dark"),
+#    #((241,237,209), "s", "sand"),
+#    #((227,203,188), "S", "sand-dark")
+#]
 
 def color_color_distance(color1, color2):
     r1, g1, b1 = color1
@@ -91,6 +106,6 @@ def convert(name, output_name, line_conversion_method = convert_line_custom_comp
     write_method(lines, output_name)
     print("Conversion done.")
 
-image_location = os.path.join(sys.path[0], 'NE2_LR_LC_SR_W_DR_25.tif') #change me for different image
-output_location = os.path.join(sys.path[0], 'map_25_compressed.lua') #change me for a different output file
+image_location = os.path.join(sys.path[0], 'NE2_LR_LC_SR_W_DR.tif') #change me for different image
+output_location = os.path.join(sys.path[0], 'map_compressed.lua') #change me for a different output file
 convert(image_location, output_location)
