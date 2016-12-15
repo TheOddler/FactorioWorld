@@ -1,7 +1,17 @@
-require "map_compressed"
+--Select the map you want here, and don't forget to set the spawn-offset below
+require "britain"
+--require "britain2x"
+--require "world"
+--require "world50" --50% scale
+--require "world25"
 
---Settings
-local offset = {x = 8300, y = 1760} --North Belgium
+--Select your spawnpoint here
+local offset = {x = 3096, y = 3090} --good for britain
+--local offset = {x = 3096 * 2, y = 3090 * 2} --good for britain2x (double size)
+--local offset = {x = 8300, y = 1760} --good for world
+--local offset = {x = 8300 / 2, y = 1760 / 2} --good for world 50 (50% scale)
+--local offset = {x = 8300 / 4, y = 1760 / 4} --good for world 25
+
 
 --Terrain codes should be in sync with the ConvertMap code
 local terrain_codes = {
