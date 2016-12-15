@@ -21,9 +21,9 @@ terrain_codes = [
 def color_color_distance(color1, color2):
     r1, g1, b1 = color1
     r2, g2, b2 = color2
-    return (r1-r2) ** 2 + (g1-g2) ** 2 + (b1-b2) ** 2
-    #rm = (r1+r2) / 2
-    #return (2+rm) * (r1-r2) ** 2 + 4 * (g1-g2) ** 2 + 3-rm * (b1-b2) ** 2
+    #return (r1-r2) ** 2 + (g1-g2) ** 2 + (b1-b2) ** 2
+    rm = (r1+r2) / 2
+    return ((2+rm) * (r1-r2)) ** 2 + (4 * (g1-g2)) ** 2 + (3-rm * (b1-b2)) ** 2
 
 def get_terrain_letter(pixel):
     min_dist = float("inf")
@@ -91,7 +91,6 @@ def convert(name, output_name, line_conversion_method = convert_line_custom_comp
     write_method(lines, output_name)
     print("Conversion done.")
 
-image_location = os.path.join(sys.path[0], 'NE2_LR_LC_SR_W_DR_50.tif')
-output_location = os.path.join(sys.path[0], 'map_50_compressed.lua')
+image_location = os.path.join(sys.path[0], 'NE2_LR_LC_SR_W_DR_25.tif') #change me for different image
+output_location = os.path.join(sys.path[0], 'map_25_compressed.lua') #change me for a different output file
 convert(image_location, output_location)
-
