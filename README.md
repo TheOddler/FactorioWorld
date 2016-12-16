@@ -4,8 +4,6 @@ A mod for factorio that changes the map into a real-world map.
 
 Note that it only changes the terrain, and not the spawning of trees and resources.
 
-**WARNING**: This mod seems to make memory usage spike when saving. This can make you pc very slow for a while and sometimes even hang! I'm investigating this, and if you have any insights on why this might happen I would love to hear them!
-
 # Download
 
 You can get this mod here: https://mods.factorio.com/mods/TheOddler/factorio-world
@@ -20,12 +18,9 @@ This means your game will hang for a while when starting a map.
 To see progress of the loading run your game from the console (so you can see debug messages).
 In steam add "cmd /c %command%" to your launch options, as this will also show the console.
 
-# Selecting a different map
+# Selecting map size
 
-By default a big version of Britain only is selected.
-To play on the whole world you'll have to edit "control.lua".
-Simply select the map you want at the top, and the spawn point a little below that.
-I added suggestions for the spawn points for all the maps.
+To change the scale of the map change the variable `scale` in `control.lua`.
 
 # Generating your own maps
 
