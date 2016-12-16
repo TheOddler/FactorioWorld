@@ -1,10 +1,10 @@
 require "World2"
 
 --Choose your scale here!
-local scale = 12
+local scale = 6
 
 --Select your spawnpoint here (don't forget to take scale into account)
-local spawn = {x = 2068 * scale, y = 404 * scale} -- 2075, 408 = Flanders
+local spawn = {x = 2064 * scale, y = 406 * scale} -- 2064, 406 = Flanders
 
 --For those wanting to play on a very large scale:
 --You might notice that the map gets a little blocky
@@ -97,10 +97,10 @@ local function get_world_tile_name(x, y)
     local w_top_right = 1 - math.sqrt((top - y)*(top - y) + (right - x)*(right - x)) / sqrt2
     local w_bottom_left = 1 - math.sqrt((bottom - y)*(bottom - y) + (left - x)*(left - x)) / sqrt2
     local w_bottom_right = 1 - math.sqrt((bottom - y)*(bottom - y) + (right - x)*(right - x)) / sqrt2
-    w_top_left = w_top_left * w_top_left + math.random() * 0.1
-    w_top_right = w_top_right * w_top_right + math.random() * 0.1
-    w_bottom_left = w_bottom_left * w_bottom_left + math.random() * 0.1
-    w_bottom_right = w_bottom_right * w_bottom_right + math.random() * 0.1
+    w_top_left = w_top_left * w_top_left + math.random() / math.max(scale / 2, 10)
+    w_top_right = w_top_right * w_top_right + math.random() / math.max(scale / 2, 10)
+    w_bottom_left = w_bottom_left * w_bottom_left + math.random() / math.max(scale / 2, 10)
+    w_bottom_right = w_bottom_right * w_bottom_right + math.random() / math.max(scale / 2, 10)
     --get codes
     local c_top_left = decompressed_map_data[top % height][left % width]
     local c_top_right = decompressed_map_data[top % height][right % width]
