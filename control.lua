@@ -29,13 +29,13 @@ local terrain_codes = {
     ["O"] = "deepwater-green",
     ["w"] = "water",
     ["W"] = "water-green",
-    ["g"] = "grass",
-    ["m"] = "grass-medium",
-    ["G"] = "grass-dry",
-    ["d"] = "dirt",
-    ["D"] = "dirt-dark",
-    ["s"] = "sand",
-    ["S"] = "sand-dark"
+    ["g"] = "grass-1",
+    ["m"] = "grass-3",
+    ["G"] = "grass-2",
+    ["d"] = "dirt-3",
+    ["D"] = "dirt-6",
+    ["s"] = "sand-1",
+    ["S"] = "sand-3"
 }
 
 local function decompress_map_data()

@@ -1,11 +1,11 @@
 {
   "name": "factorio-world",
-  "version": "0.3.0",
+  "version": "0.16.0",
   "title": "Factorio World",
   "author": "The Oddler",
   "contact": "pablo.bollansee@gmail.com",
   "homepage": "https://github.com/TheOddler/FactorioWorld",
   "description": "Mod that changes the world generation to be a real-world map. Edit control.lua to select a scale!",
-  "factorio_version": "0.15",
-  "dependencies": ["base >= 0.15"]
+  "factorio_version": "0.16",
+  "dependencies": ["base >= 0.16"]
 }
