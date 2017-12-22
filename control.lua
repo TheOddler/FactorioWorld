@@ -1,17 +1,29 @@
-local use_large_map = settings.startup["use-large-map"].value
+require "World2"
+require "World2_large"
 
-if use_large_map then
-    require "World2_large"
-else 
-    require "World2"
-end
-
-local scale = settings.startup["map-gen-scale"].value
-
+local use_large_map = settings.global["use-large-map"].value
+local scale = settings.global["map-gen-scale"].value
 local spawn = {
-    x = scale * settings.startup["spawn-x"].value * (use_large_map and 2 or 1),
-    y = scale * settings.startup["spawn-y"].value * (use_large_map and 2 or 1)
+    x = scale * settings.global["spawn-x"].value * (use_large_map and 2 or 1),
+    y = scale * settings.global["spawn-y"].value * (use_large_map and 2 or 1)
 }
+
+script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
+    if not event then return end
+    --Should prevent user from changing the settings, but will still get through if he changes it and restarts factorio :(
+    if event.setting == "use-large-map" then settings.global["use-large-map"].value = use_large_map end
+    if event.setting == "map-gen-scale" then settings.global["map-gen-scale"].value = scale end
+    if event.setting == "spawn-x" then settings.global["spawn-x"].value = spawn.x end
+    if event.setting == "spawn-y" then settings.global["spawn-y"].value = spawn.y end
+
+    game.print("You shouldn't change the world-gen settings after you started a savegame. This will break the generating for new parts of the map.")
+    game.print("I haven't found a good way to prevent you changing them yet, so for new they are just ignored, but will take effect when restarting.")
+    game.print("Reset them to what they were, or risk fucking up your save!")
+    game.print("Your settings were: ")
+    game.print("Scale = " .. scale)
+    game.print("spawn: x = " .. spawn.x .. ", y = " .. spawn.y)
+    game.print("Use large map = " .. (use_large_map and "true" or "false"))
+end)
 
 ----
 --Don't touch anything under this, unless you know what you're doing
