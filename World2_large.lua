@@ -1,4 +1,4 @@
-map_data = {
+map_data_large = {
 	"o8064",
 	"o8064",
 	"o8064",

@@ -1,23 +1,17 @@
-require "World2"
+local use_large_map = settings.startup["use-large-map"].value
 
---Choose your scale here!
-local scale = 6
+if use_large_map then
+    require "World2_large"
+else 
+    require "World2"
+end
 
---Select your spawnpoint here (don't forget to take scale into account)
-local spawn = {x = 2064 * scale, y = 406 * scale} -- 2064, 406 = Flanders
+local scale = settings.startup["map-gen-scale"].value
 
---For those wanting to play on a very large scale:
---You might notice that the map gets a little blocky
---I tried to limit this as much as possible, but there's only so much data
---So if you want a bit more detail, I included data for a more detailed map
---To use it do:
---  1) Change the 'require' line to require "World2_large"
---  2) Set your scale (note that the same scale for the large map results in double the size)
---  3) Fix the spawn, something like 'spawn = {x = 2068 * 2 * scale, y = 404 * 2 * scale}' (notice the '* 2')
---This will make the loading at the start of the game slower, and use some more ram,
---  but the generating should be equally fast.
-
-
+local spawn = {
+    x = scale * settings.startup["spawn-x"].value * (use_large_map and 2 or 1),
+    y = scale * settings.startup["spawn-y"].value * (use_large_map and 2 or 1)
+}
 
 ----
 --Don't touch anything under this, unless you know what you're doing
@@ -41,7 +35,7 @@ local terrain_codes = {
 local function decompress_map_data()
     print("Decompressing, this can take a while...")
     local decompressed = {}
-    local height = #map_data
+    local height = use_large_map and #map_data_large or #map_data
     local width = nil
     local last = -1
     for y = 0, height-1 do
@@ -54,7 +48,7 @@ local function decompress_map_data()
         last = work
         --do decompression of this line
         local total_count = 0
-        local line = map_data[y+1]
+        local line = use_large_map and map_data_large[y+1] or map_data[y+1]
         for letter, count in string.gmatch(line, "(%a+)(%d+)") do
             for x = total_count, total_count + count do
                 decompressed[y][x] = letter
