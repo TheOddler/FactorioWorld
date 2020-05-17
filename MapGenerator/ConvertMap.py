@@ -108,13 +108,6 @@ def print_info(chunks, settings):
     print("\n")
     print("\n")
 
-# # Do the actual converting
-# # chunk_size = 4 # 3 636
-# # chunk_size = 8 # 2 714; 28 030
-# # chunk_size = 16 # 3 728
-# # chunk_size = 32 # 5 345
-# chunk_s = 64 # 7 299; 75 383
-# # chunk_size = 128 # 10243
 settings = Settings(image_file, output_file, 16, 4000)
 for s in [4, 8, 16, 32, 64, 128]:
     settings.set_output_file(output_file + str(s))
