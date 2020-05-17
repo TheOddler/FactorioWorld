@@ -1,0 +1,3 @@
+MapGenerator/map_compressed*
+MapGenerator/*.tif
+MapGenerator/__pycache__/

@@ -1,38 +1,16 @@
-import os, sys
 from PIL import Image
 from tqdm import tqdm
+from settings import Settings
 
-# Terrain codes
-terrain_codes = [
-    #((0,0,0), "_", "out-of-map"), #commented out those I don't want to generate
-    ((89,140,182), "o", "deepwater"), #ocean
-    #((24,39,14), "O", "deepwater-green"),
-    ((114,173,213), "w", "water"),
-    #((30,48,16), "W", "water-green"),
-    ((145,190,148), "g", "grass-1"),
-    ((180,205,165), "m", "grass-3"),
-    ((212,218,174), "G", "grass-2"),
-    ((220,220,217), "d", "dirt-3"),
-    ((154,149,135), "D", "dirt-6"),
-    ((241,237,209), "s", "sand-1"),
-    ((227,203,188), "S", "sand-3")
-]
+# Settings
+image_file = 'NE2_LR_LC_SR_W_DR.tif' #change me for different image
+output_file = 'map_compressed.lua' #change me for a different output file
 
-#terrain_codes = [
-#    #((0,0,0), "_", "out-of-map"), #commented out those I don't want to generate
-#    ((220,220,254), "o", "deepwater"), #ocean
-#    #((24,39,14), "O", "deepwater-green"),
-#    ((246,241,254), "w", "water"),
-#    #((30,48,16), "W", "water-green"),
-#    ((102,184,47), "g", "grass-1"),
-#    ((141,187,59), "m", "grass-3"),
-#    ((175,209,69), "G", "grass-2"),
-#    ((209,194,61), "d", "dirt-3"),
-#    ((184,116,46), "D", "dirt-6"),
-#    #((241,237,209), "s", "sand-1"),
-#    #((227,203,188), "S", "sand-3")
-#]
+# Constants
+water = 0
+ground = 1
 
+# Functions
 def color_color_distance(color1, color2):
     r1, g1, b1 = color1
     r2, g2, b2 = color2
@@ -40,72 +18,105 @@ def color_color_distance(color1, color2):
     rm = (r1+r2) / 2
     return ((2+rm) * (r1-r2)) ** 2 + (4 * (g1-g2)) ** 2 + (3-rm * (b1-b2)) ** 2
 
-def get_terrain_letter(pixel):
-    min_dist = float("inf")
-    found_code = None
-    for color, code, _ in terrain_codes:
-        dist = color_color_distance(pixel, color)
-        if dist < min_dist:
-            min_dist = dist
-            found_code = code
-    return found_code
+def is_water(color):
+    r, g, b = color
+    return b > (r + g) / 2
 
-# Line converts
-def convert_line_full_text(im, y, width):
-    line = ""
-    for x in range(0, width):
-        pixel = im.getpixel((x, y))
-        code = get_terrain_letter(pixel)
-        line += code
-    return line
+def in_image(x, y, settings):
+    return x < settings.width and y < settings.height
 
-def convert_line_custom_compressed(im, y, width):
-    line = ""
-    current_letter = get_terrain_letter(im.getpixel((0, y)))
-    current_count = 1
-    for x in range(1, width):
-        pixel = im.getpixel((x, y))
-        letter = get_terrain_letter(pixel)
-        if letter == current_letter:
-            current_count += 1
-        else:
-            line += current_letter
-            line += str(current_count)
-            current_letter = letter
-            current_count = 1
-    line += current_letter
-    line += str(current_count)
-    return line
+def convert_chunk(x, y, settings):
+    found_water = False
+    found_ground = False
+    chunk_size = settings.chunk_size
 
-# Writers
-def write_as_txt(lines, output_name):
-    output = open(output_name, 'w')
-    for line in lines:
-        output.write("%s\n" % line)
+    chunk = []
+    for pixel_y in range(y * chunk_size, y * chunk_size + chunk_size):
+        for pixel_x in range(x * chunk_size, x * chunk_size + chunk_size):
+            if in_image(pixel_x, pixel_y, settings):
+                if is_water(settings.image.getpixel((pixel_x, pixel_y))):
+                    found_water = True
+                    chunk.append(water)
+                else:
+                    found_ground = True
+                    chunk.append(ground)
+    
+    if found_water and found_ground:
+        return chunk
+    if found_water:
+        return water
+    if found_ground:
+        return ground
 
-def write_as_lua_array(lines, output_name):
-    output = open(output_name, 'w')
+def write_lua_chunk(chunk, settings):
+    output = settings.output
+    if isinstance(chunk, list):
+        output.write("\t{")
+        for tile in chunk[:-1]:
+            output.write("%s" % tile)
+            output.write(",")
+        output.write("%s" % chunk[-1])
+        output.write("}")
+    else:
+        output.write("\t%s" % chunk)
+
+def write_lua(chunks, settings):
+    output = settings.output
+    output.write("chunk_size = %s\n" % settings.chunk_size)
+    
+    output.write("width = %s\n" % settings.width)
+    output.write("height = %s\n" % settings.height)
+
     output.write("map_data = {\n")
-    for line in lines[:-1]:
-        output.write("\t\"%s\",\n" % line)
-    output.write("\t\"%s\"\n" % lines[-1]) #last one without comma
+    for chunk in tqdm(chunks[:-1]):
+        write_lua_chunk(chunk, settings)
+        output.write(",\n")
+    write_lua_chunk(chunks[-1], settings) #last one without comma
     output.write("}")
 
-# Actual conversion code
-def convert(name, output_name, line_conversion_method = convert_line_custom_compressed, write_method = write_as_lua_array):
-    print("Converting: ", name)
-    Image.MAX_IMAGE_PIXELS = 1000000000 #large enough to allow huge map
-    im = Image.open(name).convert('RGB') # the image to use
-    print(im.format, im.size, im.mode)
-    width, height = im.size
-    lines = []
-    for y in tqdm(range(0, height)):
-        line = line_conversion_method(im, y, width)
-        lines.append(line)
+def convert(settings):
+    chunks = []
+    for x in tqdm(range(0, settings.chunk_count_x)):
+        for y in range(0, settings.chunk_count_y):
+            chunk = convert_chunk(x, y, settings)
+            chunks.append(chunk)
+    return chunks
 
-    write_method(lines, output_name)
-    print("Conversion done.")
+def print_info(chunks, settings):
+    print("size = %s; " % settings.size)
+    print("chunk_size = %s\n" % settings.chunk_size)
 
-image_location = os.path.join(sys.path[0], 'NE2_LR_LC_SR_W_DR.tif') #change me for different image
-output_location = os.path.join(sys.path[0], 'map_compressed.lua') #change me for a different output file
-convert(image_location, output_location)
+    total = len(chunks)
+    print("chunks: x = %s, y = %s, total: %s\n" % (settings.chunk_count_x, settings.chunk_count_y, total))
+
+    water_count = 0
+    ground_count = 0
+    mixed_count = 0
+    for chunk in chunks:
+        if isinstance(chunk, list):
+            mixed_count += 1
+        elif chunk == water:
+            water_count += 1
+        elif chunk == ground:
+            ground_count += 1
+    
+    print("water_count = %s (%.2f%%)\n" % (water_count, water_count / total * 100))
+    print("ground_count = %s (%.2f%%)\n" % (ground_count, ground_count / total * 100))
+    print("mixed_count = %s (%.2f%%)\n" % (mixed_count, mixed_count / total * 100))
+    print("Output size = %s\n" % os.path.getsize(settings.output_file))
+    print("\n")
+    print("\n")
+
+# # Do the actual converting
+# # chunk_size = 4 # 3 636
+# # chunk_size = 8 # 2 714; 28 030
+# # chunk_size = 16 # 3 728
+# # chunk_size = 32 # 5 345
+# chunk_s = 64 # 7 299; 75 383
+# # chunk_size = 128 # 10243
+settings = Settings(image_file, output_file, 16, 4000)
+for s in [4, 8, 16, 32, 64, 128]:
+    settings.set_output_file(output_file + str(s))
+    settings.chunk_size = s
+    chunks = convert(settings)
+    write_lua(chunks, settings)
