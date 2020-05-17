@@ -1,3 +1,4 @@
+import os, sys
 from PIL import Image
 from tqdm import tqdm
 from settings import Settings
