@@ -1,94 +1,38 @@
 import os, sys
 from PIL import Image
 from tqdm import tqdm
-from settings import Settings
+import math
+from helpers import *
+import json
+import jsonpickle
+from chunk import Chunk
 
 # Settings
 image_file = 'NE2_LR_LC_SR_W_DR.tif' #change me for different image
 output_file = 'map_compressed.lua' #change me for a different output file
+chunk_sizes = [32, 8]
+resize_width = 1000 # or None
 
-# Constants
-water = 0
-ground = 1
+# Globals
+Image.MAX_IMAGE_PIXELS = 1000000000 #large enough to allow huge map
+image_file = os.path.join(sys.path[0], image_file)
+image = Image.open(image_file).convert('RGB') # the image to use
 
-# Functions
-def color_color_distance(color1, color2):
-    r1, g1, b1 = color1
-    r2, g2, b2 = color2
-    #return (r1-r2) ** 2 + (g1-g2) ** 2 + (b1-b2) ** 2
-    rm = (r1+r2) / 2
-    return ((2+rm) * (r1-r2)) ** 2 + (4 * (g1-g2)) ** 2 + (3-rm * (b1-b2)) ** 2
+output_file = os.path.join(sys.path[0], output_file)
+output = open(output_file, 'w')
 
-def is_water(color):
-    r, g, b = color
-    return b > (r + g) / 2
+# Optionally resize image
+if (resize_width is not None):
+    width, height = image.size
+    resize_height = int(float(height)*float(resize_width / float(width)))
+    image = image.resize((resize_width, resize_height), Image.ANTIALIAS)
 
-def in_image(x, y, settings):
-    return x < settings.width and y < settings.height
+# Debug show the image
+image.show()
 
-def convert_chunk(x, y, settings):
-    found_water = False
-    found_ground = False
-    chunk_size = settings.chunk_size
-
-    chunk = []
-    for pixel_y in range(y * chunk_size, y * chunk_size + chunk_size):
-        for pixel_x in range(x * chunk_size, x * chunk_size + chunk_size):
-            if in_image(pixel_x, pixel_y, settings):
-                if is_water(settings.image.getpixel((pixel_x, pixel_y))):
-                    found_water = True
-                    chunk.append(water)
-                else:
-                    found_ground = True
-                    chunk.append(ground)
-    
-    if found_water and found_ground:
-        return chunk
-    if found_water:
-        return water
-    if found_ground:
-        return ground
-
-def write_lua_chunk(chunk, settings):
-    output = settings.output
-    if isinstance(chunk, list):
-        output.write("\t{")
-        for tile in chunk[:-1]:
-            output.write("%s" % tile)
-            output.write(",")
-        output.write("%s" % chunk[-1])
-        output.write("}")
-    else:
-        output.write("\t%s" % chunk)
-
-def write_lua(chunks, settings):
-    output = settings.output
-    output.write("chunk_size = %s\n" % settings.chunk_size)
-    
-    output.write("width = %s\n" % settings.width)
-    output.write("height = %s\n" % settings.height)
-
-    output.write("map_data = {\n")
-    for chunk in tqdm(chunks[:-1]):
-        write_lua_chunk(chunk, settings)
-        output.write(",\n")
-    write_lua_chunk(chunks[-1], settings) #last one without comma
-    output.write("}")
-
-def convert(settings):
-    chunks = []
-    for x in tqdm(range(0, settings.chunk_count_x)):
-        for y in range(0, settings.chunk_count_y):
-            chunk = convert_chunk(x, y, settings)
-            chunks.append(chunk)
-    return chunks
-
-def print_info(chunks, settings):
-    print("size = %s; " % settings.size)
-    print("chunk_size = %s\n" % settings.chunk_size)
-
+def print_info(chunks):
     total = len(chunks)
-    print("chunks: x = %s, y = %s, total: %s\n" % (settings.chunk_count_x, settings.chunk_count_y, total))
+    print("chunks: %s\n" % total)
 
     water_count = 0
     ground_count = 0
@@ -104,13 +48,15 @@ def print_info(chunks, settings):
     print("water_count = %s (%.2f%%)\n" % (water_count, water_count / total * 100))
     print("ground_count = %s (%.2f%%)\n" % (ground_count, ground_count / total * 100))
     print("mixed_count = %s (%.2f%%)\n" % (mixed_count, mixed_count / total * 100))
-    print("Output size = %s\n" % os.path.getsize(settings.output_file))
     print("\n")
     print("\n")
 
-settings = Settings(image_file, output_file, 16, 4000)
-for s in [4, 8, 16, 32, 64, 128]:
-    settings.set_output_file(output_file + str(s))
-    settings.chunk_size = s
-    chunks = convert(settings)
-    write_lua(chunks, settings)
+
+
+width, height = image.size
+chunk = Chunk(image, chunk_sizes, 0, width, 0, height)
+output.write("chunk_sizes = %s\n" % chunk_sizes)
+
+jsonpickle.set_encoder_options('json', sort_keys=True, indent=4)
+pickled = jsonpickle.encode(chunk, unpicklable=False)
+output.write(pickled)
