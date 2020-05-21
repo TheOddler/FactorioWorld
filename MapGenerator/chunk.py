@@ -166,10 +166,11 @@ def convert(image, chunk_sizes):
 def _print_progress(chunk_sizes, chunk_count, chunk_i):
     chunk_size = str(chunk_sizes[0]).rjust(3)
 
-    chunk_count = str(chunk_count)
-    chunk_i = str(chunk_i + 1).rjust(len(chunk_count))
+    percentage = chunk_i / chunk_count
+    chunk_count = f"{chunk_count:,}"
+    chunk_i = f"{chunk_i + 1:,}".rjust(len(chunk_count))
 
-    info = f"{chunk_i}/{chunk_count}"
+    info = f"{chunk_i}/{chunk_count} ({percentage:.2%})"
     indent = "\t\t\t\t" * len(chunk_sizes)
 
     print(f"\r{indent}|{chunk_size}: {info}", end="\r")
