@@ -47,48 +47,26 @@ def write_newline_indent(output, indent):
     if indent is not None:
         output.write("\n" + "\t" * indent)
 
-
-
-
-
-
-
-
-
-
-
-def convert_chunk(x, y, chunk_size):
-    found_water = False
-    found_ground = False
-    chunk = []
-    for pixel_y in range(y * chunk_size, y * chunk_size + chunk_size):
-        for pixel_x in range(x * chunk_size, x * chunk_size + chunk_size):
-            if in_image(pixel_x, pixel_y, image):
-                if is_water(image.getpixel((pixel_x, pixel_y))):
-                    found_water = True
-                    chunk.append(water)
-                else:
-                    found_ground = True
-                    chunk.append(ground)
+def newline_indent(indent):
+    if indent is not None:
+        return "\n" + "\t" * indent
+    else:
+        return ""
     
-    if found_water and found_ground:
-        return chunk
-    if found_water:
-        return water
-    if found_ground:
-        return ground
+def print_dividing_info(chunk_sizes, chunk_count_x, chunk_count_y, chunk_x, chunk_y):
+    if chunk_sizes:
+        chunk_size = str(chunk_sizes[0]).ljust(3)
+    else:
+        chunk_size = 1
 
-def convert(chunk_sizes):
-    pixels = []
-    
+    chunk_count_x = str(chunk_count_x).ljust(3)
+    chunk_count_y = str(chunk_count_y).ljust(3)
+    chunk_x = str(chunk_x + 1).rjust(3)
+    chunk_y = str(chunk_y + 1).rjust(3)
 
-    chunk_size = chunk_sizes[0]
-    chunk_count_x, chunk_count_y = chunk_count(chunk_size, image.size)
+    x_info = f"{chunk_x}/{chunk_count_x}"
+    y_info = f"{chunk_y}/{chunk_count_y}"
 
-    chunks = []
-    for x in tqdm(range(0, chunk_count_x)):
-        for y in range(0, chunk_count_y):
-            chunk = convert_chunk(x, y, chunk_size)
-            chunks.append(chunk)
-    
-    return chunks
+    indent = "\t\t\t\t" * len(chunk_sizes)
+
+    print(f"{indent}|{chunk_size}:{x_info}-{y_info}", end="\r", flush=True)

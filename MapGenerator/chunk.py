@@ -1,12 +1,12 @@
 import math
-from helpers import is_water
+from helpers import is_water, newline_indent, print_dividing_info
 
 # Constants
 water = 0
 ground = 1
 
 class Chunk:
-    def __init__(self, image, chunk_sizes, from_x, to_x, from_y, to_y):
+    def __init__(self, from_x, to_x, from_y, to_y):
         if (from_x > to_x): raise AssertionError("From x must be smaller than to x")
         if (from_y > to_y): raise AssertionError("From y must be smaller than to y")
 
@@ -14,24 +14,23 @@ class Chunk:
         self.to_x = to_x
         self.from_y = from_y
         self.to_y = to_y
-        self.data = None # list of chunks, or a single number (water/ground)
+        self.data = None # list of chunks, or int
 
-        if (len(chunk_sizes) > 0):
-            self.divide_into_chunks(chunk_sizes, image)
+    def divide(self, chunk_sizes):
+        if chunk_sizes:
+            chunk_size = chunk_sizes[0]
+            remaining_chunk_sizes = chunk_sizes[1:]
         else:
-            self.parse_pixels(image)
+            chunk_size = 1
         
-        self.prune_data()
-
-    def divide_into_chunks(self, chunk_sizes, image):
-        chunk_size = chunk_sizes[0]
-        remaining_chunk_sizes = chunk_sizes[1:]
         chunk_count_x = math.ceil( (self.to_x - self.from_x) / chunk_size )
         chunk_count_y = math.ceil( (self.to_y - self.from_y) / chunk_size )
 
         self.data = []
         for chunk_y in range(0, chunk_count_y):
             for chunk_x in range(0, chunk_count_x):
+                print_dividing_info(chunk_sizes, chunk_count_x, chunk_count_y, chunk_x, chunk_y)
+
                 from_x = self.from_x + chunk_x * chunk_size
                 from_y = self.from_y + chunk_y * chunk_size
 
@@ -40,68 +39,96 @@ class Chunk:
                 to_x = min(to_x, self.to_x)
                 to_y = min(to_y, self.to_y)
 
-                chunk = Chunk(image, remaining_chunk_sizes, from_x, to_x, from_y, to_y)
+                chunk = Chunk(from_x, to_x, from_y, to_y)
+                if (chunk_sizes):
+                    chunk.divide(remaining_chunk_sizes)
                 self.data.append(chunk)
     
-    def parse_pixels(self, image):
-        pixels = []
-        for y in range(self.from_y, self.to_y):
-            for x in range(self.from_x, self.to_x):
-                color = image.getpixel((x, y))
-                if is_water(color):
-                    pixels.append(0)
-                else:
-                    pixels.append(1)
-        self.data = pixels
-
-    def prune_data(self):
-        if isinstance(self.data, int):
-            return # We are already done
+    def parse(self, image):
         if isinstance(self.data, list):
-            # Check what is in the data, and prune the child chunks
-            contains_water = False
-            contains_ground = False
-            contains_chunks = False
-            for d in self.data:
-                if d == water:
-                    contains_water = True
-                elif d == ground:
-                    contains_ground = True
-                elif isinstance(d, Chunk):
-                    d.prune_data()
-                    contains_chunks = True
-                else:
-                    raise AssertionError("Data contains something strange: " + type(d))
-            
-            if contains_chunks:
-                if contains_water or contains_ground:
-                    raise AssertionError("Data contains both chunks and numbers, that's not good.")
-                cc_water = False
-                cc_ground = False
-                for chunk in self.data:
-                    if chunk.data == water:
-                        cc_water = True
-                    elif chunk.data == ground:
-                        cc_ground = True
-                    else:
-                        cc_water = True
-                        cc_ground = True
-                
-                if cc_water and cc_ground:
-                    pass # Nothing we can prune here
-                elif cc_water:
-                    self.data = water
-                elif cc_ground:
-                    self.data = ground
-                else:
-                    raise AssertionError("Data contains chunks that are nothing?")
-            elif contains_water and contains_ground:
-                pass # Nothing we can prune here
-            elif contains_water:
-                self.data = water
-            elif contains_ground:
-                self.data = ground
-            else:
-                raise AssertionError("Data contains nothing? What is going on?")
+            self.parse_node(image)
         else:
-            raise AssertionError("Data is not an Int, nor a list, wtf is it? " + type(self.data))
+            self.parse_leaf(image)
+        
+    def parse_node(self, image):
+        for chunk in self.data:
+            chunk.parse(image)
+
+    def parse_leaf(self, image):
+        if (self.from_x != self.to_x - 1): raise AssertionError("This is not a leaf node? " + str(self.from_x) + " != " + str(self.to_x) + " - 1")
+        if (self.from_y != self.to_y - 1): raise AssertionError("This is not a leaf node? " + str(self.from_y) + "!=" + str(self.to_y) + " - 1")
+
+        color = image.getpixel((self.from_x, self.from_y))
+        if is_water(color):
+            self.data = water
+        else:
+            self.data = ground
+
+    def prune(self):
+        if isinstance(self.data, list):
+            return self.prune_node()
+        else:
+            return self.prune_leaf()
+    
+    def prune_node(self):
+        # Check what is in the data, and prune the child chunks
+        contains_water = False
+        contains_ground = False
+        for chunk in self.data:
+            kind = chunk.prune()
+            if kind == water:
+                contains_water = True
+            elif kind == ground:
+                contains_ground = True
+            else:
+                contains_water = True
+                contains_ground = True
+        
+        if contains_water and contains_ground:
+            # Nothing we can prune here
+            return None
+        elif contains_water:
+            self.data = water
+            return water
+        elif contains_ground:
+            self.data = ground
+            return ground
+        else:
+            raise AssertionError("Data contains nothing? What is going on?")
+
+    def prune_leaf(self):
+        return self.data
+    
+    def to_lua(self, indent = 0, last = True):
+        if isinstance(self.data, list):
+            return self.to_lua_node(indent, last)
+        else:
+            return self.to_lua_leaf(indent, last)
+
+    def to_lua_node(self, indent, last):
+        string = ""
+        indent1 = indent + 1 if indent is not None else None
+
+        string += newline_indent(indent)
+        string += "{"
+        string += newline_indent(indent1)
+
+        for chunk in self.data[:-1]:
+            string += chunk.to_lua(indent1, False)
+        string += self.data[-1].to_lua(indent1, True)
+
+        string += newline_indent(indent)
+        string += "}"
+        if not last:
+            string += ","
+        string += newline_indent(indent)
+
+        return string
+
+    def to_lua_leaf(self, indent, last):
+        string = str(self.data)
+        if not last:
+            string += ","
+        return string
+    
+
