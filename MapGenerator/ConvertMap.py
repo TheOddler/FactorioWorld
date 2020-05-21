@@ -11,7 +11,7 @@ from chunk import Chunk
 image_file = 'NE2_LR_LC_SR_W_DR.tif' #change me for different image
 output_file = 'map_compressed.lua' #change me for a different output file
 chunk_sizes = [32, 8]
-resize_width = 1000 # or None
+resize_width = None # 1000 # or None
 
 # Globals
 Image.MAX_IMAGE_PIXELS = 1000000000 #large enough to allow huge map
@@ -60,9 +60,9 @@ def convert_with(chunk_sizes):
 width, height = image.size
 jsonpickle.set_encoder_options('json', sort_keys=True, indent=4)
 
-part_1 = [256, 128, 64, 32, 16, 8, 4]
-part_2 = [128, 64, 32, 16, 8, 4]
-part_3 = [64, 32, 16, 8, 4]
+part_1 = [128, 64, 32, 16, 8, 4]
+part_2 = [64, 32, 16, 8, 4]
+part_3 = [32, 16, 8, 4]
 
 for f in part_1:
     convert_with([f])
