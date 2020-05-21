@@ -2,8 +2,8 @@ import math
 from helpers import is_water, newline_indent, print_dividing_info
 
 # Constants
-water = 0
-ground = 1
+WATER = 0
+GROUND = 1
 
 class Chunk:
     def __init__(self, from_x, to_x, from_y, to_y):
@@ -60,9 +60,9 @@ class Chunk:
 
         color = image.getpixel((self.from_x, self.from_y))
         if is_water(color):
-            self.data = water
+            self.data = WATER
         else:
-            self.data = ground
+            self.data = GROUND
 
     def prune(self):
         if isinstance(self.data, list):
@@ -76,9 +76,9 @@ class Chunk:
         contains_ground = False
         for chunk in self.data:
             kind = chunk.prune()
-            if kind == water:
+            if kind == WATER:
                 contains_water = True
-            elif kind == ground:
+            elif kind == GROUND:
                 contains_ground = True
             else:
                 contains_water = True
@@ -88,11 +88,11 @@ class Chunk:
             # Nothing we can prune here
             return None
         elif contains_water:
-            self.data = water
-            return water
+            self.data = WATER
+            return WATER
         elif contains_ground:
-            self.data = ground
-            return ground
+            self.data = GROUND
+            return GROUND
         else:
             raise AssertionError("Data contains nothing? What is going on?")
 
@@ -132,3 +132,28 @@ class Chunk:
         return string
     
 
+    def info(self):
+        if isinstance(self.data, list):
+            return self.info_node()
+        else:
+            return self.info_leaf()
+
+    def info_node(self):
+        water_sum = 0
+        ground_sum = 0
+        mixed_sum = 1 # This one is mixed too
+        nodes_sum = 1 # 1 for this node
+        for chunk in self.data:
+            water, ground, mixed, nodes = chunk.info()
+            water_sum += water
+            ground_sum += ground
+            mixed_sum += mixed
+            nodes_sum += nodes
+        return water_sum, ground_sum, mixed_sum, nodes_sum
+
+    def info_leaf(self):
+        water = 1 if self.data == WATER else 0
+        ground = 1 if self.data == GROUND else 0
+        mixed = 0
+        nodes = 1
+        return water, ground, mixed, nodes
