@@ -1,13 +1,14 @@
 import math
-from helpers import is_water, time_s_to_hms
+from helpers import is_water, time_s_to_hms, roundb
 import time
+from PIL import Image
 
 # Constants
 WATER = 0
 GROUND = 1
 
 class Chunk:
-    def __init__(self, from_x, to_x, from_y, to_y):
+    def __init__(self, from_x, to_x, from_y, to_y, is_top_level = False):
         if (from_x > to_x): raise AssertionError("From x must be smaller than to x")
         if (from_y > to_y): raise AssertionError("From y must be smaller than to y")
 
@@ -15,6 +16,7 @@ class Chunk:
         self.to_x = to_x
         self.from_y = from_y
         self.to_y = to_y
+        self.is_top_level = is_top_level
         self.data = None # list of chunks, or int
 
     def _divide(self, chunk_sizes):
@@ -29,7 +31,7 @@ class Chunk:
         self.data = []
         for chunk_y in range(0, chunk_count_y):
             for chunk_x in range(0, chunk_count_x):
-                _print_progress(chunk_sizes, chunk_count_x * chunk_count_y, chunk_x + chunk_count_x * chunk_y)
+                if self.is_top_level: _print_progress(chunk_count_x * chunk_count_y, chunk_x + chunk_count_x * chunk_y)
 
                 from_x = self.from_x + chunk_x * chunk_size
                 from_y = self.from_y + chunk_y * chunk_size
@@ -54,7 +56,7 @@ class Chunk:
         
     def _parse_node(self, image):
         for i, chunk in enumerate(self.data):
-            _print_progress(self.chunk_sizes, len(self.data), i)
+            if self.is_top_level: _print_progress(len(self.data), i)
             chunk._parse(image)
 
     def _parse_leaf(self, image):
@@ -93,7 +95,7 @@ class Chunk:
         contains_water = False
         contains_ground = False
         for i, chunk in enumerate(self.data):
-            _print_progress(self.chunk_sizes, len(self.data), i)
+            if self.is_top_level: _print_progress(len(self.data), i)
 
             kind = chunk._prune()
             if kind == WATER:
@@ -144,22 +146,35 @@ class Chunk:
                 nodes_sum += nodes
         return water_sum, ground_sum, mixed_sum, nodes_sum
 
-def convert(image, chunk_sizes):
-    width, height = image.size
-    chunk = Chunk(0, width, 0, height)
+def convert(image, chunk_sizes, resize_width = None):
+    print(f"Converting with chunks: {chunk_sizes}", )
 
+    # Resize image to nearest multiple of largest chunk size
+    width, height = image.size
+    largest_chunk_size = chunk_sizes[0]
+    resize_width = roundb(resize_width or width, largest_chunk_size)
+    resize_height = roundb(int(float(height)*float(resize_width / float(width))), largest_chunk_size)
+
+    print(f"Resizing image from {width}, {height} to {resize_width}, {resize_height}...")
+    image = image.resize((resize_width, resize_height), Image.ANTIALIAS)
+
+    # Create top level chunk
+    width, height = image.size
+    chunk = Chunk(0, width, 0, height, True)
+
+    # Do the actual convorting
     print("Dividing...", end="\r")
-    _reset_progress_start_time(chunk_sizes)
+    _reset_progress_start_time()
     chunk._divide(chunk_sizes)
     print()
 
     print("Parsing...", end="\r")
-    _reset_progress_start_time(chunk_sizes)
+    _reset_progress_start_time()
     chunk._parse(image)
     print()
 
     print("Pruning...", end="\r")
-    _reset_progress_start_time(chunk_sizes)
+    _reset_progress_start_time()
     chunk._prune()
     print()
 
@@ -167,29 +182,15 @@ def convert(image, chunk_sizes):
 
 
 _start_time = None
-_top_level = None
-def _reset_progress_start_time(chunk_sizes):
+def _reset_progress_start_time():
     global _start_time
-    global _top_level
     _start_time = time.time()
-    _top_level = chunk_sizes[0]
 
-def _print_progress(chunk_sizes, chunk_count, chunk_i):
-    is_top_level = chunk_sizes[0] == _top_level
-
-    # print time
-    time_indent = "\t\t"
-    if is_top_level:
-        elapsed = time.time() - _start_time
-        guess_total_time = elapsed / (chunk_i + 1) * chunk_count
-        print(f"{time_indent}{time_s_to_hms(elapsed)} of {time_s_to_hms(guess_total_time)}", end="\r")
-
-    # print info
-    chunk_size = str(chunk_sizes[0]).rjust(3)
-    percentage = chunk_i / chunk_count
-    chunk_count = f"{chunk_count:,}"
-    chunk_i = f"{chunk_i + 1:,}".rjust(len(chunk_count))
-    info_indent = time_indent + "\t\t\t\t" * len(chunk_sizes) # "\t\t\t\t" * len(chunk_sizes)
-    info = f"{chunk_i}/{chunk_count} ({percentage:.2%})"
-    print(f"{info_indent}|{chunk_size}: {info}", end="\r")
+def _print_progress(total, idx):
+    elapsed = time.time() - _start_time
+    total_time = elapsed / (idx + 1) * total
+    remaining = total_time - elapsed
+    percentage = idx / total
+    
+    print(f"\t\t{time_s_to_hms(elapsed)} / -{time_s_to_hms(remaining)} / {time_s_to_hms(total_time)}\t{percentage:.2%}", end="\r")
 
