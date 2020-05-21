@@ -187,10 +187,12 @@ def _reset_progress_start_time():
     _start_time = time.time()
 
 def _print_progress(total, idx):
-    elapsed = time.time() - _start_time
-    total_time = elapsed / (idx + 1) * total
-    remaining = total_time - elapsed
-    percentage = idx / total
-    
-    print(f"\t\t{time_s_to_hms(elapsed)} / -{time_s_to_hms(remaining)} / {time_s_to_hms(total_time)}\t{percentage:.2%}", end="\r")
+    idx += 1
+    if idx % 500 == 1 or idx == total: # Only update every so often
+        elapsed = time.time() - _start_time
+        total_time = elapsed / idx * total
+        remaining = total_time - elapsed
+        percentage = idx / total
+        
+        print(f"\t\t{time_s_to_hms(elapsed)} / -{time_s_to_hms(remaining)} / {time_s_to_hms(total_time)}\t{percentage:.2%}", end="\r")
 
