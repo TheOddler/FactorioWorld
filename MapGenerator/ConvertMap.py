@@ -9,7 +9,7 @@ import time
 image_file = 'NE2_LR_LC_SR_W_DR.tif' #change me for different image
 output_file = 'map_compressed.lua' #change me for a different output file
 chunk_sizes = [32, 8]
-resize_width = None # Number (ex 500) or None
+resize_width = 500 # Number (ex 500) or None
 
 # Globals
 Image.MAX_IMAGE_PIXELS = 1000000000 #large enough to allow huge map
@@ -42,18 +42,18 @@ def convert_with(chunk_sizes):
     print(f"Mixed: {mixed}/{nodes} = {mixed/nodes*100:.1f}%")
     print()
 
-# convert_with(chunk_sizes)
+convert_with([8])
 # convert_with(chunk_sizes[:-1])
 
-part_1 = [64, 32, 16, 8, 4]
-part_2 = [32, 16, 8, 4]
-part_3 = [] # [32, 16, 8, 4]
+# part_1 = [64, 32, 16, 8, 4]
+# part_2 = [32, 16, 8, 4]
+# part_3 = [] # [32, 16, 8, 4]
 
-for f in part_1:
-    convert_with([f])
-    for s in part_2:
-        if f > s:
-            convert_with([f, s])
-        for t in part_3:
-            if f > s > t:
-                convert_with([f, s, t])
+# for f in part_1:
+#     convert_with([f])
+#     for s in part_2:
+#         if f > s:
+#             convert_with([f, s])
+#         for t in part_3:
+#             if f > s > t:
+#                 convert_with([f, s, t])
