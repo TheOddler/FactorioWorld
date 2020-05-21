@@ -25,34 +25,9 @@ def chunk_count(chunk_size, img_size):
 def roundb(x, base):
     return base * round(x/base)
 
-def to_lua(thing, indent = 0, last = True):
-    string = ""
-    if isinstance(thing, list):
-        indent1 = indent + 1 if indent is not None else None
-        string += newline_indent(indent)
-        string += "{"
-        string += newline_indent(indent1)
-
-        for sub_thing in thing[:-1]:
-            string += to_lua(sub_thing, indent1, False)
-        string += to_lua(thing[-1], indent1, True)
-
-        string += newline_indent(indent)
-        string += "}"
-        if not last:
-            string += ","
-        string += newline_indent(indent)
-    else:
-        string = str(thing)
-        if not last:
-            string += ","
-    return string
-
-def newline_indent(indent):
+def write_newline_indent(output, indent):
     if indent is not None:
-        return "\n" + "\t" * indent
-    else:
-        return ""
+        return output.write("\n" + "\t" * indent)
 
 def time_s_to_hms(seconds):
     hour = seconds // 3600

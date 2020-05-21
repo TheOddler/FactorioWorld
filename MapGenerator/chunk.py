@@ -1,5 +1,5 @@
 import math
-from helpers import is_water, time_s_to_hms, roundb
+from helpers import is_water, time_s_to_hms, roundb, write_newline_indent
 import time
 from PIL import Image
 
@@ -122,9 +122,43 @@ class Chunk:
         return contains_water, contains_ground
 
 
+    def write_lua(self, output, indent = 0, last = True):
+        if isinstance(self.data, list):
+            indent1 = indent + 1 if indent is not None else None
+            write_newline_indent(output, indent)
+            output.write("{")
+            write_newline_indent(output, indent1)
+
+            for i, d in enumerate(self.data[:-1]):
+                if self.is_top_level: _print_progress(len(self.data), i)
+                Chunk._write_lua_d(output, d, indent1, False)
+            if self.is_top_level: _print_progress(len(self.data), len(self.data)-1)
+            Chunk._write_lua_d(output, self.data[-1], indent1, True)
+
+            write_newline_indent(output, indent)
+            output.write("}")
+            if not last:
+                output.write(",")
+            write_newline_indent(output, indent)
+        else:
+            Chunk._write_lua_pixel(output, self.data, last)
+    
+    @staticmethod
+    def _write_lua_pixel(output, pixel, last):
+        output.write(str(pixel))
+        if not last:
+            output.write(",")
+    
+    @staticmethod
+    def _write_lua_d(output, d, indent, last):
+        if isinstance(d, Chunk):
+            d.write_lua(output, indent, last)
+        else:
+            Chunk._write_lua_pixel(output, d, last)
+
     def info(self):
         if isinstance(self.data, list):
-            return self.info_list()
+            return self._info_list()
         else:
             water = 1 if self.data == WATER else 0
             ground = 1 if self.data == GROUND else 0
@@ -132,7 +166,7 @@ class Chunk:
             nodes = 1
             return water, ground, mixed, nodes
 
-    def info_list(self):
+    def _info_list(self):
         water_sum = 0
         ground_sum = 0
         mixed_sum = 1 # This one is mixed too
@@ -188,11 +222,11 @@ def _reset_progress_start_time():
 
 def _print_progress(total, idx):
     idx += 1
-    if idx % 500 == 1 or idx == total: # Only update every so often
+    if idx % (total // 100 + 1) == 0 or idx == total: # Only update every so often
         elapsed = time.time() - _start_time
         total_time = elapsed / idx * total
         remaining = total_time - elapsed
         percentage = idx / total
         
-        print(f"\t\t{time_s_to_hms(elapsed)} / -{time_s_to_hms(remaining)} / {time_s_to_hms(total_time)}\t{percentage:.2%}", end="\r")
+        print(f"\t\t{time_s_to_hms(elapsed)} / -{time_s_to_hms(remaining)} / {time_s_to_hms(total_time)}\t{percentage:.0%}", end="\r")
 
