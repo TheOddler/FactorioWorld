@@ -45,41 +45,63 @@ class Chunk:
     
     def parse_pixels(self, image):
         pixels = []
-        found_water = False
-        found_ground = False
         for y in range(self.from_y, self.to_y):
             for x in range(self.from_x, self.to_x):
                 color = image.getpixel((x, y))
-                # print(x, y, color)
                 if is_water(color):
                     pixels.append(0)
-                    found_water = True
                 else:
                     pixels.append(1)
-                    found_ground = True
-        
-        if found_water and found_ground:
-            print("Both")
-            self.data = pixels
-        elif found_water:
-            # print("Water")
-            self.data = water
-        elif found_ground:
-            print("Ground")
-            self.data = ground
-        else:
-            raise AssertionError("Somehow didn't find water nor ground...")
+        self.data = pixels
 
     def prune_data(self):
-        if (isinstance(self.data, int)):
+        if isinstance(self.data, int):
             return # We are already done
-        if (isinstance(self.data, list)):
-            # First prune all children
+        if isinstance(self.data, list):
+            # Check what is in the data, and prune the child chunks
+            contains_water = False
+            contains_ground = False
+            contains_chunks = False
             for d in self.data:
-                if (isinstance(d, int)):
-                    return # We are already done
-                else:
+                if d == water:
+                    contains_water = True
+                elif d == ground:
+                    contains_ground = True
+                elif isinstance(d, Chunk):
                     d.prune_data()
-            # print(type(self.data))
+                    contains_chunks = True
+                else:
+                    raise AssertionError("Data contains something strange: " + type(d))
+            
+            if contains_chunks:
+                if contains_water or contains_ground:
+                    raise AssertionError("Data contains both chunks and numbers, that's not good.")
+                cc_water = False
+                cc_ground = False
+                for chunk in self.data:
+                    if chunk.data == water:
+                        cc_water = True
+                    elif chunk.data == ground:
+                        cc_ground = True
+                    else:
+                        cc_water = True
+                        cc_ground = True
+                
+                if cc_water and cc_ground:
+                    pass # Nothing we can prune here
+                elif cc_water:
+                    self.data = water
+                elif cc_ground:
+                    self.data = ground
+                else:
+                    raise AssertionError("Data contains chunks that are nothing?")
+            elif contains_water and contains_ground:
+                pass # Nothing we can prune here
+            elif contains_water:
+                self.data = water
+            elif contains_ground:
+                self.data = ground
+            else:
+                raise AssertionError("Data contains nothing? What is going on?")
         else:
             raise AssertionError("Data is not an Int, nor a list, wtf is it? " + type(self.data))
