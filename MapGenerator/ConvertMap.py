@@ -26,7 +26,9 @@ def convert_with(chunk_sizes):
 
     print("Writing...", end="\r")
     output = open(output_file[:-4] + '---' + '-'.join(str(e) for e in chunk_sizes) + ".lua", 'w')
-    output.write("chunk_sizes = %s\n" % chunk_sizes)
+    output.write("chunk_sizes = { " + ",".join(str(s) for s in chunk_sizes) + " }\n")
+    output.write("width = " + str(chunk.to_x - chunk.from_x) + "\n")
+    output.write("height = " + str(chunk.to_y - chunk.from_y) + "\n")
     output.write("data = ")
     chunk.write_lua(output)
     print()
