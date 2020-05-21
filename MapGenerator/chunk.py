@@ -1,5 +1,6 @@
 import math
-from helpers import is_water
+from helpers import is_water, time_s_to_hms
+import time
 
 # Constants
 WATER = 0
@@ -147,30 +148,48 @@ def convert(image, chunk_sizes):
     width, height = image.size
     chunk = Chunk(0, width, 0, height)
 
-    print("Dividing...", end="")
+    print("Dividing...", end="\r")
+    _reset_progress_start_time(chunk_sizes)
     chunk._divide(chunk_sizes)
     print()
 
-    print("Parsing...", end="")
+    print("Parsing...", end="\r")
+    _reset_progress_start_time(chunk_sizes)
     chunk._parse(image)
     print()
 
-    print("Pruning...", end="")
+    print("Pruning...", end="\r")
+    _reset_progress_start_time(chunk_sizes)
     chunk._prune()
     print()
 
     return chunk
 
 
-    
-def _print_progress(chunk_sizes, chunk_count, chunk_i):
-    chunk_size = str(chunk_sizes[0]).rjust(3)
+_start_time = None
+_top_level = None
+def _reset_progress_start_time(chunk_sizes):
+    global _start_time
+    global _top_level
+    _start_time = time.time()
+    _top_level = chunk_sizes[0]
 
+def _print_progress(chunk_sizes, chunk_count, chunk_i):
+    is_top_level = chunk_sizes[0] == _top_level
+
+    # print time
+    time_indent = "\t\t"
+    if is_top_level:
+        elapsed = time.time() - _start_time
+        guess_total_time = elapsed / (chunk_i + 1) * chunk_count
+        print(f"{time_indent}{time_s_to_hms(elapsed)} of {time_s_to_hms(guess_total_time)}", end="\r")
+
+    # print info
+    chunk_size = str(chunk_sizes[0]).rjust(3)
     percentage = chunk_i / chunk_count
     chunk_count = f"{chunk_count:,}"
     chunk_i = f"{chunk_i + 1:,}".rjust(len(chunk_count))
-
+    info_indent = time_indent + "\t\t\t\t" * len(chunk_sizes) # "\t\t\t\t" * len(chunk_sizes)
     info = f"{chunk_i}/{chunk_count} ({percentage:.2%})"
-    indent = "\t\t\t\t" * len(chunk_sizes)
+    print(f"{info_indent}|{chunk_size}: {info}", end="\r")
 
-    print(f"\r{indent}|{chunk_size}: {info}", end="\r")
