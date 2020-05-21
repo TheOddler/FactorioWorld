@@ -53,26 +53,6 @@ def newline_indent(indent):
         return "\n" + "\t" * indent
     else:
         return ""
-    
-def print_dividing_info(chunk_sizes, chunk_count_x, chunk_count_y, chunk_x, chunk_y):
-    if chunk_sizes:
-        chunk_size = chunk_sizes[0]
-    else:
-        chunk_size = 1
-    chunk_size = str(chunk_size).rjust(3)
-
-    chunk_count_x = str(chunk_count_x)
-    chunk_count_y = str(chunk_count_y)
-    chunk_x = str(chunk_x + 1).rjust(len(chunk_count_x))
-    chunk_y = str(chunk_y + 1).rjust(len(chunk_count_y))
-
-    x_info = f"{chunk_x}/{chunk_count_x}"
-    y_info = f"{chunk_y}/{chunk_count_y}"
-
-    indent = "\t\t\t\t" * len(chunk_sizes)
-
-    # print(f"{indent}|{chunk_size}:{x_info}-{y_info}", end="\r", flush=True)
-    print(f"\r{indent}|{chunk_size}: {x_info}-{y_info}", end="\r")
 
 def time_s_to_hms(seconds):
     hour = seconds // 3600

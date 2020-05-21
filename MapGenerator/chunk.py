@@ -1,5 +1,5 @@
 import math
-from helpers import is_water, to_lua, print_dividing_info
+from helpers import is_water
 
 # Constants
 WATER = 0
@@ -17,6 +17,8 @@ class Chunk:
         self.data = None # list of chunks, or int
 
     def _divide(self, chunk_sizes):
+        self.chunk_sizes = chunk_sizes
+
         chunk_size = chunk_sizes[0]
         remaining_chunk_sizes = chunk_sizes[1:]
         
@@ -26,7 +28,7 @@ class Chunk:
         self.data = []
         for chunk_y in range(0, chunk_count_y):
             for chunk_x in range(0, chunk_count_x):
-                print_dividing_info(chunk_sizes, chunk_count_x, chunk_count_y, chunk_x, chunk_y)
+                _print_progress(chunk_sizes, chunk_count_x * chunk_count_y, chunk_x + chunk_count_x * chunk_y)
 
                 from_x = self.from_x + chunk_x * chunk_size
                 from_y = self.from_y + chunk_y * chunk_size
@@ -50,7 +52,8 @@ class Chunk:
             self._parse_leaf(image)
         
     def _parse_node(self, image):
-        for chunk in self.data:
+        for i, chunk in enumerate(self.data):
+            _print_progress(self.chunk_sizes, len(self.data), i)
             chunk._parse(image)
 
     def _parse_leaf(self, image):
@@ -88,7 +91,9 @@ class Chunk:
         # Check what is in the data, and prune the child chunks
         contains_water = False
         contains_ground = False
-        for chunk in self.data:
+        for i, chunk in enumerate(self.data):
+            _print_progress(self.chunk_sizes, len(self.data), i)
+
             kind = chunk._prune()
             if kind == WATER:
                 contains_water = True
@@ -155,3 +160,16 @@ def convert(image, chunk_sizes):
     print()
 
     return chunk
+
+
+    
+def _print_progress(chunk_sizes, chunk_count, chunk_i):
+    chunk_size = str(chunk_sizes[0]).rjust(3)
+
+    chunk_count = str(chunk_count)
+    chunk_i = str(chunk_i + 1).rjust(len(chunk_count))
+
+    info = f"{chunk_i}/{chunk_count}"
+    indent = "\t\t\t\t" * len(chunk_sizes)
+
+    print(f"\r{indent}|{chunk_size}: {info}", end="\r")
