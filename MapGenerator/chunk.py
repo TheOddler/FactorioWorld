@@ -16,7 +16,7 @@ class Chunk:
         self.to_y = to_y
         self.data = None # list of chunks, or int
 
-    def divide(self, chunk_sizes):
+    def _divide(self, chunk_sizes):
         chunk_size = chunk_sizes[0]
         remaining_chunk_sizes = chunk_sizes[1:]
         
@@ -38,22 +38,22 @@ class Chunk:
 
                 chunk = Chunk(from_x, to_x, from_y, to_y)
                 if (remaining_chunk_sizes):
-                    chunk.divide(remaining_chunk_sizes)
+                    chunk._divide(remaining_chunk_sizes)
                 self.data.append(chunk)
     
-    def parse(self, image):
+    def _parse(self, image):
         if self.data:
             if not isinstance(self.data, list) or not isinstance(self.data[0], Chunk):
                 raise AssertionError("At this point if the chunk has data, it should be a list of chunks")
-            self.parse_node(image)
+            self._parse_node(image)
         else:
-            self.parse_leaf(image)
+            self._parse_leaf(image)
         
-    def parse_node(self, image):
+    def _parse_node(self, image):
         for chunk in self.data:
-            chunk.parse(image)
+            chunk._parse(image)
 
-    def parse_leaf(self, image):
+    def _parse_leaf(self, image):
         pixels = []
         for y in range(self.from_y, self.to_y):
             for x in range(self.from_x, self.to_x):
@@ -63,14 +63,14 @@ class Chunk:
 
         self.data = pixels
 
-    def prune(self):
+    def _prune(self):
         if not isinstance(self.data, list):
                 raise AssertionError("At this point all data is a list, either full of ints, or full of chunks")
 
         if isinstance(self.data[0], Chunk):
-            contains_water, contains_ground = self.check_data_chunks()
+            contains_water, contains_ground = self._check_data_chunks()
         else:
-            contains_water, contains_ground = self.check_data_pixels()
+            contains_water, contains_ground = self._check_data_pixels()
             
         if contains_water and contains_ground:
             # Nothing we can prune here
@@ -84,12 +84,12 @@ class Chunk:
         else:
             raise AssertionError("Data contains nothing?")
     
-    def check_data_chunks(self):
+    def _check_data_chunks(self):
         # Check what is in the data, and prune the child chunks
         contains_water = False
         contains_ground = False
         for chunk in self.data:
-            kind = chunk.prune()
+            kind = chunk._prune()
             if kind == WATER:
                 contains_water = True
             elif kind == GROUND:
@@ -100,7 +100,7 @@ class Chunk:
         
         return contains_water, contains_ground
 
-    def check_data_pixels(self):
+    def _check_data_pixels(self):
         contains_water = False
         contains_ground = False
         for kind in self.data:
@@ -112,12 +112,6 @@ class Chunk:
                 raise AssertionError("Pixel is neither water nor ground... what is going on? " + kind)
         
         return contains_water, contains_ground
-        
-
-    
-    def to_lua(self, indent = 0, last = True):
-        return to_lua(self, indent, last)
-    
 
 
     def info(self):
@@ -143,3 +137,21 @@ class Chunk:
                 mixed_sum += mixed
                 nodes_sum += nodes
         return water_sum, ground_sum, mixed_sum, nodes_sum
+
+def convert(image, chunk_sizes):
+    width, height = image.size
+    chunk = Chunk(0, width, 0, height)
+
+    print("Dividing...", end="")
+    chunk._divide(chunk_sizes)
+    print()
+
+    print("Parsing...", end="")
+    chunk._parse(image)
+    print()
+
+    print("Pruning...", end="")
+    chunk._prune()
+    print()
+
+    return chunk

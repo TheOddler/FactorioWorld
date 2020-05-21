@@ -1,8 +1,8 @@
 import os, sys
 from PIL import Image
 import math
-from helpers import time_s_to_hms, roundb
-from chunk import Chunk
+from helpers import time_s_to_hms, roundb, to_lua
+from chunk import Chunk, convert
 import time
 
 # Settings
@@ -35,25 +35,13 @@ def convert_with(chunk_sizes):
     start = time.time()
 
     print(f"Converting image ({width}, {height}) with: {chunk_sizes}", )
-    chunk = Chunk(0, width, 0, height)
-
-    print("Dividing...", end="")
-    chunk.divide(chunk_sizes)
-    print()
-
-    print("Parsing...", end="")
-    chunk.parse(image)
-    print()
-
-    print("Pruning...", end="")
-    chunk.prune()
-    print()
+    chunk = convert(image, chunk_sizes)
 
     print("Writing...", end="")
     output = open(output_file[:-4] + '---' + '-'.join(str(e) for e in chunk_sizes) + ".lua", 'w')
     output.write("chunk_sizes = %s\n" % chunk_sizes)
     output.write("data = ")
-    output.write(chunk.to_lua())
+    output.write(to_lua(chunk))
     print()
 
     end = time.time()
