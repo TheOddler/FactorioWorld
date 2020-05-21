@@ -181,6 +181,11 @@ class Chunk:
         return water_sum, ground_sum, mixed_sum, nodes_sum
 
 def convert(image, chunk_sizes, resize_width = None):
+    # Check if chunks are proper size
+    for a, b in zip(chunk_sizes[:-1], chunk_sizes[1:]):
+        if a % b != 0:
+            raise AssertionError("Chunk sizes must go from big to small, and smaller ones should divide bigger ones. For instance, 32, 8, 4 is good, 32, 24, 8 is not because 32 is not divisible by 24.")
+
     print(f"Converting with chunks: {chunk_sizes}", )
 
     # Resize image to nearest multiple of largest chunk size
