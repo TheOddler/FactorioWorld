@@ -22,30 +22,28 @@ def chunk_count(chunk_size, img_size):
     count_y = math.ceil(height / chunk_size)
     return count_x, count_y
 
-def write_lua(output, thing, indent = 0, last = True):
-    indent1 = indent + 1 if indent is not None else None
+def to_lua(thing, indent = 0, last = True):
+    string = ""
     if isinstance(thing, list):
-        write_newline_indent(output, indent)
-        output.write("{")
-        write_newline_indent(output, indent1)
+        indent1 = indent + 1 if indent is not None else None
+        string += newline_indent(indent)
+        string += "{"
+        string += newline_indent(indent1)
 
         for sub_thing in thing[:-1]:
-            write_lua(output, sub_thing, indent1, False)
-        write_lua(output, thing[-1], indent1, True)
+            string += to_lua(sub_thing, indent1, False)
+        string += to_lua(thing[-1], indent1, True)
 
-        write_newline_indent(output, indent)
-        output.write("}")
+        string += newline_indent(indent)
+        string += "}"
         if not last:
-            output.write(",")
-        write_newline_indent(output, indent)
+            string += ","
+        string += newline_indent(indent)
     else:
-        output.write("%s" % thing)
+        string = str(thing)
         if not last:
-            output.write(",")
-
-def write_newline_indent(output, indent):
-    if indent is not None:
-        output.write("\n" + "\t" * indent)
+            string += ","
+    return string
 
 def newline_indent(indent):
     if indent is not None:
