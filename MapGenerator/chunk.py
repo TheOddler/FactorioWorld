@@ -122,32 +122,24 @@ class Chunk:
 
     def info(self):
         if isinstance(self.data, list):
-            return self.info_node()
+            return self.info_list()
         else:
-            return self.info_leaf()
+            water = 1 if self.data == WATER else 0
+            ground = 1 if self.data == GROUND else 0
+            mixed = 0
+            nodes = 1
+            return water, ground, mixed, nodes
 
-    def info_node(self):
+    def info_list(self):
         water_sum = 0
         ground_sum = 0
         mixed_sum = 1 # This one is mixed too
         nodes_sum = 1 # 1 for this node
-        for d in self.data:
-            if isinstance(d, Chunk):
-                water, ground, mixed, nodes = d.info()
-            else:
-                water = 1 if d == WATER else 0
-                ground = 1 if d == GROUND else 0
-                mixed = 0
-                nodes = 1
-            water_sum += water
-            ground_sum += ground
-            mixed_sum += mixed
-            nodes_sum += nodes
+        if isinstance(self.data[0], Chunk):
+            for chunk in self.data:
+                water, ground, mixed, nodes = chunk.info()
+                water_sum += water
+                ground_sum += ground
+                mixed_sum += mixed
+                nodes_sum += nodes
         return water_sum, ground_sum, mixed_sum, nodes_sum
-
-    def info_leaf(self):
-        water = 1 if self.data == WATER else 0
-        ground = 1 if self.data == GROUND else 0
-        mixed = 0
-        nodes = 1
-        return water, ground, mixed, nodes

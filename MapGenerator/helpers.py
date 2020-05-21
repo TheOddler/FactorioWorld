@@ -22,6 +22,9 @@ def chunk_count(chunk_size, img_size):
     count_y = math.ceil(height / chunk_size)
     return count_x, count_y
 
+def roundb(x, base):
+    return base * round(x/base)
+
 def to_lua(thing, indent = 0, last = True):
     string = ""
     if isinstance(thing, list):
@@ -69,7 +72,7 @@ def print_dividing_info(chunk_sizes, chunk_count_x, chunk_count_y, chunk_x, chun
     indent = "\t\t\t\t" * len(chunk_sizes)
 
     # print(f"{indent}|{chunk_size}:{x_info}-{y_info}", end="\r", flush=True)
-    print(f"{indent}|{chunk_size}: {x_info}-{y_info}", end="\r")
+    print(f"\r{indent}|{chunk_size}: {x_info}-{y_info}", end="\r")
 
 def time_s_to_hms(seconds):
     hour = seconds // 3600
