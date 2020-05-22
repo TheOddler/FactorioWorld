@@ -40,6 +40,7 @@ local terrain_codes = {
     ["S"] = "sand-3"
 }
 
+--The variable that will store the decompressed map
 local decompressed_map_data = {}
 local width = nil
 local height = #terrain_types
@@ -47,6 +48,7 @@ for y = 0, #terrain_types-1 do
     decompressed_map_data[y] = {}
 end
 
+--Function to actually do the decompressing
 local function decrompress_line(y)
     local decompressed_line = decompressed_map_data[y]
     if(#decompressed_line == 0) then
@@ -77,6 +79,11 @@ local function add_to_total(totals, weight, code)
     end
 end
 
+local function get_world_tile_code_raw(x, y)
+    decrompress_line(y)
+    return decompressed_map_data[y % height][x % width]
+end
+
 local function get_world_tile_name(x, y)
     --safezone
     if x > -5 and x < 5 and y > -5 and y < 5 then
@@ -104,18 +111,10 @@ local function get_world_tile_name(x, y)
     w_bottom_left = w_bottom_left * w_bottom_left + math.random() / math.max(scale / 2, 10)
     w_bottom_right = w_bottom_right * w_bottom_right + math.random() / math.max(scale / 2, 10)
     --get codes
-    local c_top_left_y = top % height
-    local c_top_right_y = top % height
-    local c_bottom_left_y = bottom % height
-    local c_bottom_right_y = bottom % height
-    decrompress_line(c_top_left_y)
-    decrompress_line(c_top_right_y)
-    decrompress_line(c_bottom_left_y)
-    decrompress_line(c_bottom_right_y)
-    local c_top_left = decompressed_map_data[c_top_left_y][left % width]
-    local c_top_right = decompressed_map_data[c_top_right_y][right % width]
-    local c_bottom_left = decompressed_map_data[c_bottom_left_y][left % width]
-    local c_bottom_right = decompressed_map_data[c_bottom_right_y][right % width]
+    local c_top_left = get_world_tile_code_raw(left, top)
+    local c_top_right = get_world_tile_code_raw(right, top)
+    local c_bottom_left = get_world_tile_code_raw(left, bottom)
+    local c_bottom_right = get_world_tile_code_raw(right, bottom)
     --calculate total weights for codes
     local totals = {}
     add_to_total(totals, w_top_left, c_top_left)
