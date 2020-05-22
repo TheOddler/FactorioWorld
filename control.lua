@@ -3,26 +3,19 @@ require "World2_large"
 
 local use_large_map = settings.global["use-large-map"].value
 local scale = settings.global["map-gen-scale"].value
-local spawn = {
-    x = scale * settings.global["spawn-x"].value * (use_large_map and 2 or 1),
-    y = scale * settings.global["spawn-y"].value * (use_large_map and 2 or 1)
+local spawn_settings = {
+    x = settings.global["spawn-x"].value,
+    y = settings.global["spawn-y"].value
 }
 local safe_zone_size = settings.global["safe-zone-size"].value
 
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
-    if not event then return end
-    --Should prevent user from changing the settings, but will still get through if he changes it and restarts factorio :(
-    if event.setting == "use-large-map" then settings.global["use-large-map"].value = use_large_map end
-    if event.setting == "map-gen-scale" then settings.global["map-gen-scale"].value = scale end
-    if event.setting == "spawn-x" then settings.global["spawn-x"].value = spawn.x end
-    if event.setting == "spawn-y" then settings.global["spawn-y"].value = spawn.y end
-
     game.print("You shouldn't change the world-gen settings after you started a savegame. This will break the generating for new parts of the map.")
-    game.print("I haven't found a good way to prevent you changing them yet, so for new they are just ignored, but will take effect when restarting.")
-    game.print("Reset them to what they were, or risk fucking up your save!")
+    game.print("The change is ignored for now, but will take effect when restarting the game.")
+    game.print("Return them to what they were, or risk smegging up your save!")
     game.print("Your settings were: ")
     game.print("Scale = " .. scale)
-    game.print("spawn: x = " .. spawn.x .. ", y = " .. spawn.y)
+    game.print("spawn: x = " .. spawn_settings.x .. ", y = " .. spawn_settings.y)
     game.print("Use large map = " .. (use_large_map and "true" or "false"))
 end)
 
@@ -52,6 +45,12 @@ if use_large_map then
 else
     terrain_types = map_data
 end
+
+--Calculate spawn so it is roughly the same position on the map regardless of scale and wether you use large map or not
+local spawn = {
+    x = scale * spawn_settings.x * (use_large_map and 2 or 1),
+    y = scale * spawn_settings.y * (use_large_map and 2 or 1)
+}
 
 --The variable that will store the decompressed map
 local decompressed_map_data = {}
