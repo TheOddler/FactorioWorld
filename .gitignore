@@ -1,4 +1,5 @@
 MapGenerator/map_compressed*
+MapGenerator/World_*.lua
 MapGenerator/*.tif
 MapGenerator/__pycache__/
 .vscode/.ropeproject/

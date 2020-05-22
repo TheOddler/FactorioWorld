@@ -1,5 +1,5 @@
-require "World2"
-require "World2_large"
+require "World_large"
+require "World_small"
 
 local use_large_map = settings.global["use-large-map"].value
 local scale = settings.global["map-gen-scale"].value
@@ -43,7 +43,7 @@ local terrain_types = nil
 if use_large_map then
     terrain_types = map_data_large
 else
-    terrain_types = map_data
+    terrain_types = map_data_small
 end
 
 --Calculate spawn so it is roughly the same position on the map regardless of scale and wether you use large map or not
