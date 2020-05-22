@@ -6,10 +6,17 @@ from helpers import *
 
 # Settings
 image_file = 'NE2_LR_LC_SR_W_DR.tif' #change me for different image
-output_file = 'map_compressed.lua' #change me for a different output file
-chunk_sizes = [32, 8]
-resize_width = None # Number (ex 500) or None
-colour_width = 1/2 # How much smaller should the colour map be, percentage (ex 0.15) or exact number (ex 500)
+resize_width = 8064 # Number (ex 500) or None
+
+
+# Maybe settings
+# The controller of the mod assumes the world files are name "World_large" and "World_small", so if you change this, make sure to rename the files later too or change the name in control.lua
+output_file_prefix = 'World' #change me for a different output file
+
+
+
+
+## Only change stuff below here when you know what you're doing, or like to live dangerously.
 
 # Globals
 Image.MAX_IMAGE_PIXELS = 1000000000 #large enough to allow huge map
@@ -17,8 +24,7 @@ image_file = os.path.join(sys.path[0], image_file)
 print(f"Loading image...")
 image = Image.open(image_file).convert('RGB') # the image to use
 
-output_file = os.path.join(sys.path[0], output_file)
-output = open(output_file, 'w')
+output_file_path_partial = os.path.join(sys.path[0], output_file_prefix)
 
 # Optionally resize image
 if resize_width:
@@ -29,13 +35,12 @@ if resize_width:
 else:
     large_image = image
 
-# Make smaller image for the colour map
-width, height = image.size
-if colour_width < 1:
-    colour_width = math.floor((resize_width or width) * colour_width)
-colour_height = int(float(height)*float(colour_width / float(width)))
-print(f"Creating small image with size {colour_width}, {colour_height}...")
-small_image = image.resize((colour_width, colour_height), Image.ANTIALIAS)
+# Make half-size image for the small map
+width, height = large_image.size
+small_width = int(width / 2)
+small_height = int(height / 2)
+print(f"Creating small image with size {small_width}, {small_height}...")
+small_image = image.resize((small_width, small_height), Image.ANTIALIAS)
 
 # Terrain codes
 terrain_codes = [
@@ -64,25 +69,7 @@ def get_terrain_letter(pixel):
     return found_code
 
 # Line converts
-def convert_line_land_water(image, y):
-    width, _ = image.size
-    line = []
-    currently_water = True # start with water always
-    current_count = 0
-    for x in range(0, width):
-        pixel = image.getpixel((x, y))
-        next_water = is_water(pixel)
-        if currently_water == next_water:
-            current_count += 1
-        else:
-            line.append(current_count)
-            currently_water = next_water
-            current_count = 1
-    if current_count > 0:
-        line.append(current_count)
-    return line
-
-def convert_line_colour(image, y):
+def convert_line(image, y):
     width, _ = image.size
     line = ""
     current_letter = get_terrain_letter(image.getpixel((0, y)))
@@ -102,36 +89,36 @@ def convert_line_colour(image, y):
     return line
 
 # Writers
-def write_lua_list(output, list_):
-    output.write(f"\t{{{ ','.join(str(a) for a in list_) }}}")
-
-def write_lua_string(output, string):
+def write_lua_line(output, line):
     output.write('\t"')
-    output.write(string)
+    output.write(line)
     output.write('"')
 
 # Actual conversion code
-def convert(image, line_converter, line_writer, data_name):
+def convert(image, data_name, output):
     _, height = image.size
     lines = []
     for y in tqdm(range(0, height)):
-        line = line_converter(image, y)
+        line = convert_line(image, y)
         lines.append(line)
     
     output.write(f"\n{data_name} = {{\n")
     for line in lines[:-1]:
-        line_writer(output, line)
+        write_lua_line(output, line)
         output.write(",\n")
-    line_writer(output, lines[-1]) #last one without comma
+    write_lua_line(output, lines[-1]) #last one without comma
     output.write("\n}\n")
 
-def convert_land_water():
-    print("Converting land/water... ")
-    convert(large_image, convert_line_land_water, write_lua_list, "land_water")
+def convert_large():
+    print("Converting large... ")
+    output = open(output_file_path_partial + "_large.lua", 'w')
+    convert(large_image, "map_data_large", output)
 
-def convert_colours():
-    print("Converting colours... ")
-    convert(small_image, convert_line_colour, write_lua_string, "terrain_types")
+def convert_regular():
+    print("Converting small... ")
+    output = open(output_file_path_partial + "_small.lua", 'w')
+    convert(small_image, "map_data_small", output)
 
-# convert_land_water()
-convert_colours()
+convert_large()
+convert_regular()
+print("Conversion done. Now move the generaped world files to the root folder of the mod to use them.")
