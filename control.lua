@@ -65,7 +65,6 @@ end
 local function decrompress_line(y)
     local decompressed_line = decompressed_map_data[y]
     if(#decompressed_line == 0) then
-        game.print("Decompressing line " .. y)
         --do decompression of this line
         local total_count = 0
         local line = terrain_types[y+1]
@@ -158,7 +157,6 @@ local function on_chunk_generated(event)
 
     local w = rb.x - lt.x
     local h = rb.y - lt.y
-    print("Chunk generated: ", lt.x, lt.y, w, h)
 
     local tiles = {}
     for y = lt.y-1, rb.y do
