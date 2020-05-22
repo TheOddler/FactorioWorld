@@ -1,27 +1,21 @@
-require "World2"
-require "World2_large"
+require "World_large"
+require "World_small"
 
 local use_large_map = settings.global["use-large-map"].value
 local scale = settings.global["map-gen-scale"].value
-local spawn = {
-    x = scale * settings.global["spawn-x"].value * (use_large_map and 2 or 1),
-    y = scale * settings.global["spawn-y"].value * (use_large_map and 2 or 1)
+local spawn_settings = {
+    x = settings.global["spawn-x"].value,
+    y = settings.global["spawn-y"].value
 }
+local safe_zone_size = settings.global["safe-zone-size"].value
 
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
-    if not event then return end
-    --Should prevent user from changing the settings, but will still get through if he changes it and restarts factorio :(
-    if event.setting == "use-large-map" then settings.global["use-large-map"].value = use_large_map end
-    if event.setting == "map-gen-scale" then settings.global["map-gen-scale"].value = scale end
-    if event.setting == "spawn-x" then settings.global["spawn-x"].value = spawn.x end
-    if event.setting == "spawn-y" then settings.global["spawn-y"].value = spawn.y end
-
     game.print("You shouldn't change the world-gen settings after you started a savegame. This will break the generating for new parts of the map.")
-    game.print("I haven't found a good way to prevent you changing them yet, so for new they are just ignored, but will take effect when restarting.")
-    game.print("Reset them to what they were, or risk fucking up your save!")
+    game.print("The change is ignored for now, but will take effect when restarting the game.")
+    game.print("Return them to what they were, or risk smegging up your save!")
     game.print("Your settings were: ")
     game.print("Scale = " .. scale)
-    game.print("spawn: x = " .. spawn.x .. ", y = " .. spawn.y)
+    game.print("spawn: x = " .. spawn_settings.x .. ", y = " .. spawn_settings.y)
     game.print("Use large map = " .. (use_large_map and "true" or "false"))
 end)
 
@@ -44,26 +38,38 @@ local terrain_codes = {
     ["S"] = "sand-3"
 }
 
-local function decompress_map_data()
-    print("Decompressing, this can take a while...")
-    local decompressed = {}
-    local height = use_large_map and #map_data_large or #map_data
-    local width = nil
-    local last = -1
-    for y = 0, height-1 do
-        decompressed[y] = {}
-        --debug info
-        work = math.floor(y * 100 / height)
-        if work ~= last then --so it doesn't print the same percent over and over.
-            print("... ", work, "%")
-        end
-        last = work
+--Get correct world
+local terrain_types = nil
+if use_large_map then
+    terrain_types = map_data_large
+else
+    terrain_types = map_data_small
+end
+
+--Calculate spawn so it is roughly the same position on the map regardless of scale and wether you use large map or not
+local spawn = {
+    x = scale * spawn_settings.x * (use_large_map and 2 or 1),
+    y = scale * spawn_settings.y * (use_large_map and 2 or 1)
+}
+
+--The variable that will store the decompressed map
+local decompressed_map_data = {}
+local width = nil
+local height = #terrain_types
+for y = 0, #terrain_types-1 do
+    decompressed_map_data[y] = {}
+end
+
+--Function to actually do the decompressing
+local function decrompress_line(y)
+    local decompressed_line = decompressed_map_data[y]
+    if(#decompressed_line == 0) then
         --do decompression of this line
         local total_count = 0
-        local line = use_large_map and map_data_large[y+1] or map_data[y+1]
+        local line = terrain_types[y+1]
         for letter, count in string.gmatch(line, "(%a+)(%d+)") do
             for x = total_count, total_count + count do
-                decompressed[y][x] = letter
+                decompressed_line[x] = letter
             end
             total_count = total_count + count
         end
@@ -71,14 +77,10 @@ local function decompress_map_data()
         if width == nil then
             width = total_count
         elseif width ~= total_count then
-            error()
+            error("Mismatching width: " .. width .. " vs " .. total_count)
         end
     end
-    print("Finished decompressing")
-    return decompressed, width, height
 end
-
-decompressed_map_data, width, height = decompress_map_data();
 
 local function add_to_total(totals, weight, code)
     if totals[code] == nil then
@@ -88,7 +90,19 @@ local function add_to_total(totals, weight, code)
     end
 end
 
+local function get_world_tile_code_raw(x, y)
+    y = (y + height) % height
+    decrompress_line(y)
+    x = (x + width) % width
+    return decompressed_map_data[y][x]
+end
+
 local function get_world_tile_name(x, y)
+    --figure out of this is the safe-zone before screwing with x and y
+    safe_zone = x > -safe_zone_size and x < safe_zone_size and y > -safe_zone_size and y < safe_zone_size
+    --spawn
+    x = x + spawn.x
+    y = y + spawn.y
     --scaling
     x = x / scale
     y = y / scale
@@ -108,10 +122,10 @@ local function get_world_tile_name(x, y)
     w_bottom_left = w_bottom_left * w_bottom_left + math.random() / math.max(scale / 2, 10)
     w_bottom_right = w_bottom_right * w_bottom_right + math.random() / math.max(scale / 2, 10)
     --get codes
-    local c_top_left = decompressed_map_data[top % height][left % width]
-    local c_top_right = decompressed_map_data[top % height][right % width]
-    local c_bottom_left = decompressed_map_data[bottom % height][left % width]
-    local c_bottom_right = decompressed_map_data[bottom % height][right % width]
+    local c_top_left = get_world_tile_code_raw(left, top)
+    local c_top_right = get_world_tile_code_raw(right, top)
+    local c_bottom_left = get_world_tile_code_raw(left, bottom)
+    local c_bottom_right = get_world_tile_code_raw(right, bottom)
     --calculate total weights for codes
     local totals = {}
     add_to_total(totals, w_top_left, c_top_left)
@@ -127,7 +141,12 @@ local function get_world_tile_name(x, y)
             weight = total.weight
         end
     end
-    return terrain_codes[code]
+    local terrain_name = terrain_codes[code]
+    --safezone
+    if safe_zone and string.match(terrain_name, "water") then
+        terrain_name = "sand-1"
+    end
+    return terrain_name
 end
 
 local function on_chunk_generated(event)
@@ -137,12 +156,11 @@ local function on_chunk_generated(event)
 
     local w = rb.x - lt.x
     local h = rb.y - lt.y
-    print("Chunk generated: ", lt.x, lt.y, w, h)
 
     local tiles = {}
     for y = lt.y-1, rb.y do
         for x = lt.x-1, rb.x do
-            table.insert(tiles, {name=get_world_tile_name(x + spawn.x, y + spawn.y), position={x,y}})
+            table.insert(tiles, {name=get_world_tile_name(x, y), position={x,y}})
         end
     end
     surface.set_tiles(tiles)

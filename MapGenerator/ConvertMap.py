@@ -1,6 +1,46 @@
 import os, sys
+import math
 from PIL import Image
 from tqdm import tqdm
+from helpers import *
+
+# Settings
+image_file = 'NE2_LR_LC_SR_W_DR.tif' #change me for different image
+resize_width = 8064 # Number (ex 500) or None
+
+
+# Maybe settings
+# The controller of the mod assumes the world files are name "World_large" and "World_small", so if you change this, make sure to rename the files later too or change the name in control.lua
+output_file_prefix = 'World' #change me for a different output file
+
+
+
+
+## Only change stuff below here when you know what you're doing, or like to live dangerously.
+
+# Globals
+Image.MAX_IMAGE_PIXELS = 1000000000 #large enough to allow huge map
+image_file = os.path.join(sys.path[0], image_file)
+print(f"Loading image...")
+image = Image.open(image_file).convert('RGB') # the image to use
+
+output_file_path_partial = os.path.join(sys.path[0], output_file_prefix)
+
+# Optionally resize image
+if resize_width:
+    width, height = image.size
+    resize_height = int(float(height)*float(resize_width / float(width)))
+    print(f"Resizing image from {width}, {height} to {resize_width}, {resize_height}...")
+    large_image = image.resize((resize_width, resize_height), Image.ANTIALIAS)
+else:
+    large_image = image
+
+# Make half-size image for the small map
+width, height = large_image.size
+small_width = int(width / 2)
+small_height = int(height / 2)
+print(f"Creating small image with size {small_width}, {small_height}...")
+small_image = image.resize((small_width, small_height), Image.ANTIALIAS)
 
 # Terrain codes
 terrain_codes = [
@@ -18,28 +58,6 @@ terrain_codes = [
     ((227,203,188), "S", "sand-3")
 ]
 
-#terrain_codes = [
-#    #((0,0,0), "_", "out-of-map"), #commented out those I don't want to generate
-#    ((220,220,254), "o", "deepwater"), #ocean
-#    #((24,39,14), "O", "deepwater-green"),
-#    ((246,241,254), "w", "water"),
-#    #((30,48,16), "W", "water-green"),
-#    ((102,184,47), "g", "grass-1"),
-#    ((141,187,59), "m", "grass-3"),
-#    ((175,209,69), "G", "grass-2"),
-#    ((209,194,61), "d", "dirt-3"),
-#    ((184,116,46), "D", "dirt-6"),
-#    #((241,237,209), "s", "sand-1"),
-#    #((227,203,188), "S", "sand-3")
-#]
-
-def color_color_distance(color1, color2):
-    r1, g1, b1 = color1
-    r2, g2, b2 = color2
-    #return (r1-r2) ** 2 + (g1-g2) ** 2 + (b1-b2) ** 2
-    rm = (r1+r2) / 2
-    return ((2+rm) * (r1-r2)) ** 2 + (4 * (g1-g2)) ** 2 + (3-rm * (b1-b2)) ** 2
-
 def get_terrain_letter(pixel):
     min_dist = float("inf")
     found_code = None
@@ -51,20 +69,13 @@ def get_terrain_letter(pixel):
     return found_code
 
 # Line converts
-def convert_line_full_text(im, y, width):
+def convert_line(image, y):
+    width, _ = image.size
     line = ""
-    for x in range(0, width):
-        pixel = im.getpixel((x, y))
-        code = get_terrain_letter(pixel)
-        line += code
-    return line
-
-def convert_line_custom_compressed(im, y, width):
-    line = ""
-    current_letter = get_terrain_letter(im.getpixel((0, y)))
+    current_letter = get_terrain_letter(image.getpixel((0, y)))
     current_count = 1
     for x in range(1, width):
-        pixel = im.getpixel((x, y))
+        pixel = image.getpixel((x, y))
         letter = get_terrain_letter(pixel)
         if letter == current_letter:
             current_count += 1
@@ -78,34 +89,36 @@ def convert_line_custom_compressed(im, y, width):
     return line
 
 # Writers
-def write_as_txt(lines, output_name):
-    output = open(output_name, 'w')
-    for line in lines:
-        output.write("%s\n" % line)
-
-def write_as_lua_array(lines, output_name):
-    output = open(output_name, 'w')
-    output.write("map_data = {\n")
-    for line in lines[:-1]:
-        output.write("\t\"%s\",\n" % line)
-    output.write("\t\"%s\"\n" % lines[-1]) #last one without comma
-    output.write("}")
+def write_lua_line(output, line):
+    output.write('\t"')
+    output.write(line)
+    output.write('"')
 
 # Actual conversion code
-def convert(name, output_name, line_conversion_method = convert_line_custom_compressed, write_method = write_as_lua_array):
-    print("Converting: ", name)
-    Image.MAX_IMAGE_PIXELS = 1000000000 #large enough to allow huge map
-    im = Image.open(name).convert('RGB') # the image to use
-    print(im.format, im.size, im.mode)
-    width, height = im.size
+def convert(image, data_name, output):
+    _, height = image.size
     lines = []
     for y in tqdm(range(0, height)):
-        line = line_conversion_method(im, y, width)
+        line = convert_line(image, y)
         lines.append(line)
+    
+    output.write(f"\n{data_name} = {{\n")
+    for line in lines[:-1]:
+        write_lua_line(output, line)
+        output.write(",\n")
+    write_lua_line(output, lines[-1]) #last one without comma
+    output.write("\n}\n")
 
-    write_method(lines, output_name)
-    print("Conversion done.")
+def convert_large():
+    print("Converting large... ")
+    output = open(output_file_path_partial + "_large.lua", 'w')
+    convert(large_image, "map_data_large", output)
 
-image_location = os.path.join(sys.path[0], 'NE2_LR_LC_SR_W_DR.tif') #change me for different image
-output_location = os.path.join(sys.path[0], 'map_compressed.lua') #change me for a different output file
-convert(image_location, output_location)
+def convert_regular():
+    print("Converting small... ")
+    output = open(output_file_path_partial + "_small.lua", 'w')
+    convert(small_image, "map_data_small", output)
+
+convert_large()
+convert_regular()
+print("Conversion done. Now move the generaped world files to the root folder of the mod to use them.")

@@ -1,4 +1,4 @@
-map_data = {
+map_data_small = {
 	"o4032",
 	"o4032",
 	"o4032",

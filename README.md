@@ -36,7 +36,7 @@ The mod then takes these strings (one for each line of pixels), decompresses it 
 ## Require Python libraries
 
 * Pillow - for processing the images: `pip install Pillow`
-* tqdm - for some nice loading bars while you wait for the slow converter: `pip install tqdm`
+* tqdm - for fast loading bars: `pip install tqdm`
 
 ## Usage
 
