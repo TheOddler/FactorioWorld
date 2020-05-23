@@ -4,3 +4,4 @@ MapGenerator/*.tif
 MapGenerator/__pycache__/
 .vscode/.ropeproject/
 tmp/
+*.zip
