@@ -1,9 +1,11 @@
 require "World_large"
 require "World_small"
+require "spawns"
 
 local use_large_map = settings.global["use-large-map"].value
 local scale = settings.global["map-gen-scale"].value
 local spawn_settings = {
+    position = settings.global["spawn-position"].value,
     x = settings.global["spawn-x"].value,
     y = settings.global["spawn-y"].value
 }
@@ -15,7 +17,7 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
     game.print("Return them to what they were, or risk smegging up your save!")
     game.print("Your settings were: ")
     game.print("Scale = " .. scale)
-    game.print("spawn: x = " .. spawn_settings.x .. ", y = " .. spawn_settings.y)
+    game.print("spawn: " .. spawn_settings.position .. "; x = " .. spawn_settings.x .. ", y = " .. spawn_settings.y)
     game.print("Use large map = " .. (use_large_map and "true" or "false"))
 end)
 
@@ -46,10 +48,17 @@ else
     terrain_types = map_data_small
 end
 
---Calculate spawn so it is roughly the same position on the map regardless of scale and wether you use large map or not
-local spawn = {
-    x = scale * spawn_settings.x * (use_large_map and 2 or 1),
-    y = scale * spawn_settings.y * (use_large_map and 2 or 1)
+--Get spawn
+local spawn = spawns[spawn_settings.position]
+--If x and y are not set (for custom) use the x and y settings
+spawn = {
+    x = spawn.x or spawn_settings.x,
+    y = spawn.y or spawn_settings.y
+}
+--Scale spawn so it is roughly the same position on the map regardless of scale and wether you use large map or not
+spawn = {
+    x = scale * spawn.x * (use_large_map and 2 or 1),
+    y = scale * spawn.y * (use_large_map and 2 or 1)
 }
 
 --The variable that will store the decompressed map
