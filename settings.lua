@@ -40,16 +40,23 @@ data:extend({
     },
     {
         type = "bool-setting",
+        name = "repeat-map",
+        setting_type = "runtime-global",
+        default_value = true,
+        order = "c"
+    },
+    {
+        type = "bool-setting",
         name = "use-large-map",
         setting_type = "runtime-global",
         default_value = false,
-        order = "c"
+        order = "d"
     },
     {
         type = "int-setting",
         name = "safe-zone-size",
         setting_type = "runtime-global",
         default_value = 5,
-        order = "c"
+        order = "e"
     },
 })

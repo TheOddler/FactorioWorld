@@ -10,6 +10,8 @@ local spawn_settings = {
     y = settings.global["spawn-y"].value
 }
 local safe_zone_size = settings.global["safe-zone-size"].value
+local repeat_map = settings.global["repeat-map"].value
+local out_of_map_code = "o" -- The terrain to use for everything outside the map
 
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
     game.print("You shouldn't change the world-gen settings after you started a savegame. This will break the generating for new parts of the map.")
@@ -19,6 +21,7 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
     game.print("Scale = " .. scale)
     game.print("spawn: " .. spawn_settings.position .. "; x = " .. spawn_settings.x .. ", y = " .. spawn_settings.y)
     game.print("Use large map = " .. (use_large_map and "true" or "false"))
+    game.print("Repeat map = " .. (repeat_map and "true" or "false"))
 end)
 
 ----
@@ -91,6 +94,10 @@ local function decrompress_line(y)
     end
 end
 
+--Decompress one line to we know the width
+decrompress_line(0)
+
+--Helper functions
 local function add_to_total(totals, weight, code)
     if totals[code] == nil then
         totals[code] = {code=code, weight=weight}
@@ -100,10 +107,15 @@ local function add_to_total(totals, weight, code)
 end
 
 local function get_world_tile_code_raw(x, y)
-    y = (y + height) % height
-    decrompress_line(y)
-    x = (x + width) % width
-    return decompressed_map_data[y][x]
+    y_wrap = y % height
+    x_wrap = x % width
+
+    if not repeat_map and (x ~= x_wrap or y ~= y_wrap)then
+        return out_of_map_code
+    end
+
+    decrompress_line(y_wrap)
+    return decompressed_map_data[y_wrap][x_wrap]
 end
 
 local function get_world_tile_name(x, y)
@@ -158,6 +170,7 @@ local function get_world_tile_name(x, y)
     return terrain_name
 end
 
+--Chunk generation code
 local function on_chunk_generated(event)
     local surface = event.surface
     local lt = event.area.left_top
