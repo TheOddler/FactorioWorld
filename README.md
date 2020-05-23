@@ -40,6 +40,14 @@ The mod then takes these strings (one for each line of pixels), decompresses it 
 
 ## Usage
 
+Run `convert.py`.
+
+There are some settings at the top of the file.
+
+### Old usage info
+
+This is the old usage info, and isn't completely correct any more, but can still be useful. I'll rewrite this later. TODO
+
 To generate a new lua file and load in into your game you'll have to do a little manual labour:
 
 1. In ConvertMap.py change the image file path and output path:
@@ -62,4 +70,3 @@ To generate a new lua file and load in into your game you'll have to do a little
         * The offset is in pixel-coordinates. 0,0 is the most upper left pixel of the image.
 1. Run the game and start a new game.
     * I think if you use the mod on an existing save, it will start working on newly generated chunks, but that's untested atm.
-
