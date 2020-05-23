@@ -2,6 +2,26 @@ require "World_large"
 require "World_small"
 require "spawns"
 
+--Terrain codes should be in sync with the ConvertMap code
+local terrain_codes = {
+    ["_"] = "out-of-map",
+    ["o"] = "deepwater",--ocean
+    ["O"] = "deepwater-green",
+    ["w"] = "water",
+    ["W"] = "water-green",
+    ["g"] = "grass-1",
+    ["m"] = "grass-3",
+    ["G"] = "grass-2",
+    ["d"] = "dirt-3",
+    ["D"] = "dirt-6",
+    ["s"] = "sand-1",
+    ["S"] = "sand-3"
+}
+
+----
+--Don't touch anything under this, unless you know what you're doing
+----
+--Load settings
 local use_large_map = settings.global["use-large-map"].value
 local scale = settings.global["map-gen-scale"].value
 local spawn_settings = {
@@ -23,25 +43,6 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
     game.print("Use large map = " .. (use_large_map and "true" or "false"))
     game.print("Repeat map = " .. (repeat_map and "true" or "false"))
 end)
-
-----
---Don't touch anything under this, unless you know what you're doing
-----
---Terrain codes should be in sync with the ConvertMap code
-local terrain_codes = {
-    ["_"] = "out-of-map",
-    ["o"] = "deepwater",--ocean
-    ["O"] = "deepwater-green",
-    ["w"] = "water",
-    ["W"] = "water-green",
-    ["g"] = "grass-1",
-    ["m"] = "grass-3",
-    ["G"] = "grass-2",
-    ["d"] = "dirt-3",
-    ["D"] = "dirt-6",
-    ["s"] = "sand-1",
-    ["S"] = "sand-3"
-}
 
 --Get correct world
 local terrain_types = nil
