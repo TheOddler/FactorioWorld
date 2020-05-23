@@ -164,6 +164,10 @@ local function on_chunk_generated(event)
         end
     end
     surface.set_tiles(tiles)
+    local positions = {event.position}
+    surface.destroy_decoratives({area = event.area})
+    surface.regenerate_decorative(nil, positions)
+    surface.regenerate_entity(nil, positions)
 end
 
 script.on_event(defines.events.on_chunk_generated, on_chunk_generated)
