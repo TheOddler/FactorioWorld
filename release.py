@@ -1,5 +1,5 @@
 import os
-from zipfile import ZipFile, ZIP_BZIP2
+from zipfile import ZipFile, ZIP_DEFLATED
 import json
 from os.path import basename
 from fnmatch import fnmatch
@@ -24,7 +24,7 @@ excludes = [
     '*.py',
     '*.txt',
 ]
-with ZipFile(f'{root_folder_name}.zip', 'w', ZIP_BZIP2) as zipObj:
+with ZipFile(f'{root_folder_name}.zip', 'w', ZIP_DEFLATED) as zipObj:
     # Iterate over all the files in directory
     for folderPath, subfolders, filenames in os.walk('.'):
         folders = os.path.normpath(folderPath).split(os.sep)
