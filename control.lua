@@ -121,7 +121,9 @@ end
 
 local function get_world_tile_name(x, y)
     --figure out of this is the safe-zone before screwing with x and y
-    safe_zone = x > -safe_zone_size and x < safe_zone_size and y > -safe_zone_size and y < safe_zone_size
+    safe_zone = x >= -safe_zone_size and x < safe_zone_size and y >= -safe_zone_size and y < safe_zone_size
+    -- Check spaceship
+    space_ship = x >= -14 and x < 2 and y >= -10 and y < -1
     --spawn
     x = x + spawn.x
     y = y + spawn.y
@@ -165,7 +167,7 @@ local function get_world_tile_name(x, y)
     end
     local terrain_name = terrain_codes[code]
     --safezone
-    if safe_zone and string.match(terrain_name, "water") then
+    if (safe_zone or space_ship) and string.match(terrain_name, "water") then
         terrain_name = "sand-1"
     end
     return terrain_name
