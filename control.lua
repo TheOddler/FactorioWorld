@@ -173,6 +173,10 @@ end
 
 --Chunk generation code
 local function on_chunk_generated(event)
+    if (event.surface.name ~= "nauvis") then
+        return
+    end
+
     local surface = event.surface
     local lt = event.area.left_top
     local rb = event.area.right_bottom
