@@ -1,6 +1,6 @@
 spawns = {
     -- The first one will be used as default
-    ["Custom"] = { x = nil, y = nil },
+    ["Custom (fill in x,y below)"] = { x = nil, y = nil },
     -- The second one will be used as default for the custom x and y coordinates
     ["My home town, Europe, Belgium"] = { x = 2064, y = 406 },
     ["Africa, Ebebiyin"] = { x = 2160, y = 960 },
