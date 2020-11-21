@@ -15,6 +15,7 @@ spawns = {
     ["Canada, Brisay"] = { x = 1210, y = 330 },
     ["Canada, Saskatoon"] = { x = 810, y = 385 },
     ["Central America, Mexico City"] = { x = 880, y = 740 },
+    ["Europe, London"] = { x = 2015, y = 400 },
     ["Europe, Oslo"] = { x = 2155, y = 285 },
     ["Europe, Prague"] = { x = 2175, y = 410 },
     ["Greenland, Noord"] = { x = 1510, y = 210 },
