@@ -1,6 +1,9 @@
-require "World_large"
-require "World_small"
-require "spawns"
+require "worlds/earth_atlantic_normal"
+require "worlds/earth_atlantic_detailed"
+require "worlds/earth_pacific_normal"
+require "worlds/earth_pacific_detailed"
+require "data/spawns"
+require "data/worlds"
 
 --Terrain codes should be in sync with the ConvertMap code
 local terrain_codes = {
@@ -18,20 +21,44 @@ local terrain_codes = {
     ["S"] = "sand-3"
 }
 
+local map_data = {
+  ["earth_atlantic_normal"]   = map_earth_atlantic_normal,
+  ["earth_atlantic_detailed"] = map_earth_atlantic_detailed,
+  ["earth_pacific_normal"]    = map_earth_pacific_normal,
+  ["earth_pacific_detailed"]  = map_earth_pacific_detailed
+}
+
 ----
 --Don't touch anything under this, unless you know what you're doing
 ----
 --Load settings
-local use_large_map = settings.global["use-large-map"].value
+local world_map = settings.global["world-map"].value
+local map_index = worlds[world_map].map_index
+local detail_factor = worlds[world_map].detail_factor
 local scale = settings.global["map-gen-scale"].value
 local spawn_settings = {
-    position = settings.global["spawn-position"].value,
-    x = settings.global["spawn-x"].value,
-    y = settings.global["spawn-y"].value
+  position = settings.global["spawn-position"].value,
+  x = settings.global["spawn-x"].value,
+  y = settings.global["spawn-y"].value
 }
 local safe_zone_size = settings.global["safe-zone-size"].value
 local repeat_map = settings.global["repeat-map"].value
+
 local out_of_map_code = "o" -- The terrain to use for everything outside the map
+
+-- log("~world_map: " .. world_map)
+-- log("~map_index: " .. map_index)
+-- log("~detail_factor: " .. detail_factor)
+-- log("~scale: " .. scale)
+-- log("~position: " .. spawn_settings.position)
+-- log("~safe_zone: " .. safe_zone_size)
+
+-- disable new game start stuff
+script.on_init(function()
+    remote.call("freeplay", "set_disable_crashsite", true) -- removes crashsite and cutscene start
+    remote.call("freeplay", "set_skip_intro", true)        -- Skips popup message to press tab to start playing
+  end)
+
 
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
     game.print("You shouldn't change the world-gen settings after you started a savegame. This will break the generating for new parts of the map.")
@@ -40,29 +67,27 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
     game.print("Your settings were: ")
     game.print("Scale = " .. scale)
     game.print("spawn: " .. spawn_settings.position .. "; x = " .. spawn_settings.x .. ", y = " .. spawn_settings.y)
-    game.print("Use large map = " .. (use_large_map and "true" or "false"))
+    game.print("Use large map = " .. (detail_factor and "true" or "false"))
     game.print("Repeat map = " .. (repeat_map and "true" or "false"))
 end)
 
---Get correct world
-local terrain_types = nil
-if use_large_map then
-    terrain_types = map_data_large
-else
-    terrain_types = map_data_small
-end
 
---Get spawn
-local spawn = spawns[spawn_settings.position]
---If x and y are not set (for custom) use the x and y settings
+--Get correct world data
+---filename indexes to map data variable name
+local terrain_types = map_data[worlds[world_map].filename]
+
+--Get spawn by looking up the selection and map index in 'spawns' table
+local spawn = spawns[spawn_settings.position][map_index]
+--If x and y are not set because 'custom' was chosen, use the x and y in the settings object, which are read from the UI
 spawn = {
     x = spawn.x or spawn_settings.x,
     y = spawn.y or spawn_settings.y
 }
---Scale spawn so it is roughly the same position on the map regardless of scale and wether you use large map or not
+
+--Scale spawn so it is roughly the same position on the map regardless of scale and wether you use detailed map 
 spawn = {
-    x = scale * spawn.x * (use_large_map and 2 or 1),
-    y = scale * spawn.y * (use_large_map and 2 or 1)
+    x = scale * spawn.x * detail_factor,
+    y = scale * spawn.y * detail_factor
 }
 
 --The variable that will store the decompressed map
@@ -75,7 +100,7 @@ end
 
 --Function to actually do the decompressing
 local function decrompress_line(y)
-    local decompressed_line = decompressed_map_data[y]
+  local decompressed_line = decompressed_map_data[y]
     if(#decompressed_line == 0) then
         --do decompression of this line
         local total_count = 0
@@ -200,3 +225,4 @@ local function on_chunk_generated(event)
 end
 
 script.on_event(defines.events.on_chunk_generated, on_chunk_generated)
+
