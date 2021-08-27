@@ -22,10 +22,10 @@ local terrain_codes = {
 }
 
 local map_data = {
-  ["earth_atlantic_normal"]   = map_earth_atlantic_normal,
-  ["earth_atlantic_detailed"] = map_earth_atlantic_detailed,
-  ["earth_pacific_normal"]    = map_earth_pacific_normal,
-  ["earth_pacific_detailed"]  = map_earth_pacific_detailed
+    ["earth_atlantic_normal"]   = map_earth_atlantic_normal,
+    ["earth_atlantic_detailed"] = map_earth_atlantic_detailed,
+    ["earth_pacific_normal"]    = map_earth_pacific_normal,
+    ["earth_pacific_detailed"]  = map_earth_pacific_detailed
 }
 
 ----
@@ -37,9 +37,9 @@ local map_index = worlds[world_map].map_index
 local detail_factor = worlds[world_map].detail_factor
 local scale = settings.global["map-gen-scale"].value
 local spawn_settings = {
-  position = settings.global["spawn-position"].value,
-  x = settings.global["spawn-x"].value,
-  y = settings.global["spawn-y"].value
+    position = settings.global["spawn-position"].value,
+    x = settings.global["spawn-x"].value,
+    y = settings.global["spawn-y"].value
 }
 local safe_zone_size = settings.global["safe-zone-size"].value
 local repeat_map = settings.global["repeat-map"].value
@@ -100,7 +100,7 @@ end
 
 --Function to actually do the decompressing
 local function decrompress_line(y)
-  local decompressed_line = decompressed_map_data[y]
+    local decompressed_line = decompressed_map_data[y]
     if(#decompressed_line == 0) then
         --do decompression of this line
         local total_count = 0
@@ -225,4 +225,3 @@ local function on_chunk_generated(event)
 end
 
 script.on_event(defines.events.on_chunk_generated, on_chunk_generated)
-

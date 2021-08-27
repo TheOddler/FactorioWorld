@@ -30,6 +30,7 @@ Use the in-game mod settings to set:
 # Available Spawn locations
 
 This is a list of the regions and cities | found in 'data/spAawns.lua':
+
 | Continent       | Region         | City        |
 |:----------------|:---------------|:------------|
 | Africa          | Mali           | Bamako      |

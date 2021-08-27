@@ -87,6 +87,10 @@ spawns = {
       ["earth_atlantic"] = { x = 1950, y =  540 },
       ["earth_pacific"] =  { x =  130, y =  570 }
     },
+    ["Europe, UK, London"] = {
+      ["earth_atlantic"] = { x = 2020, y =  400 },
+      ["earth_pacific"] =  { x =  200, y =  430 }
+    },
     ["North America, Canada, Brisay"] = {
       ["earth_atlantic"] = { x = 1200, y =  330 },
       ["earth_pacific"] =  { x = 3410, y =  360 }
