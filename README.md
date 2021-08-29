@@ -29,7 +29,7 @@ Use the in-game mod settings to set:
 
 # Available Spawn locations
 
-This is a list of the regions and cities | found in 'data/spAawns.lua':
+This is a list of the regions and cities | found in 'data/spawns.lua':
 
 | Continent       | Region         | City        |
 |:----------------|:---------------|:------------|
@@ -52,6 +52,7 @@ This is a list of the regions and cities | found in 'data/spAawns.lua':
 | Europe          | Russia         | Pechora     |
 | Europe          | Russia         | Yakutsk     |
 | Europe          | Spain          | Madrid      |
+| Europe          | UK             | London      |
 | North America   | Canada         | Brisay      |
 | North America   | Canada         | Kapuskasing |
 | North America   | Canada         | Saskatoon   |

@@ -48,16 +48,10 @@ local out_of_map_code = "o" -- The terrain to use for everything outside the map
 
 -- log("~world_map: " .. world_map)
 -- log("~map_index: " .. map_index)
--- log("~detail_factor: " .. detail_factor)
--- log("~scale: " .. scale)
--- log("~position: " .. spawn_settings.position)
+-- log("~detail   : " .. detail_factor)
+-- log("~scale    : " .. scale)
+-- log("~position : " .. spawn_settings.position)
 -- log("~safe_zone: " .. safe_zone_size)
-
--- disable new game start stuff
-script.on_init(function()
-    remote.call("freeplay", "set_disable_crashsite", true) -- removes crashsite and cutscene start
-    remote.call("freeplay", "set_skip_intro", true)        -- Skips popup message to press tab to start playing
-  end)
 
 
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
