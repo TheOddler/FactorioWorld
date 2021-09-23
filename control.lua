@@ -38,8 +38,8 @@ local detail_factor = worlds[world_map].detail_factor
 local scale = settings.global["map-gen-scale"].value
 local spawn_settings = {
     position = settings.global["spawn-position"].value,
-    x = settings.global["spawn-x"].value,
-    y = settings.global["spawn-y"].value
+    custom_x = settings.global["spawn-x"].value,
+    custom_y = settings.global["spawn-y"].value
 }
 local safe_zone_size = settings.global["safe-zone-size"].value
 local repeat_map = settings.global["repeat-map"].value
@@ -60,7 +60,7 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
     game.print("Return them to what they were, or risk smegging up your save!")
     game.print("Your settings were: ")
     game.print("Scale = " .. scale)
-    game.print("spawn: " .. spawn_settings.position .. "; x = " .. spawn_settings.x .. ", y = " .. spawn_settings.y)
+    game.print("spawn: " .. spawn_settings.position .. "; x = " .. spawn_settings.custom_x .. ", y = " .. spawn_settings.custom_y)
     game.print("Use large map = " .. (detail_factor and "true" or "false"))
     game.print("Repeat map = " .. (repeat_map and "true" or "false"))
 end)
@@ -72,13 +72,21 @@ local terrain_types = map_data[worlds[world_map].filename]
 
 --Get spawn by looking up the selection and map index in 'spawns' table
 local spawn = spawns[spawn_settings.position][map_index]
---If x and y are not set because 'custom' was chosen, use the x and y in the settings object, which are read from the UI
-spawn = {
-    x = spawn.x or spawn_settings.x,
-    y = spawn.y or spawn_settings.y
-}
+--If 'custom' was chosen, use those values for x and y in the settings object, which are read from the UI
+if spawn_settings.position == "Custom (fill in x,y below)" then
+  log("~using custom spawns")
+  -- log("~custom_x : " .. spawn_settings.custom_x)
+  -- log("~custom_y : " .. spawn_settings.custom_y)
+  spawn = {
+    x = spawn_settings.custom_x,
+    y = spawn_settings.custom_y
+  }
+end
 
---Scale spawn so it is roughly the same position on the map regardless of scale and wether you use detailed map 
+log("~spawn.x: " .. spawn.x)
+log("~spawn.y: " .. spawn.y)
+
+--Scale spawn so it is roughly the same position on the map regardless of scale and wether you use detailed map
 spawn = {
     x = scale * spawn.x * detail_factor,
     y = scale * spawn.y * detail_factor
