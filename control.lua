@@ -32,17 +32,17 @@ local map_data = {
 --Don't touch anything under this, unless you know what you're doing
 ----
 --Load settings
-local world_map = settings.global["world-map"].value
+local world_map = settings.global["fw_world-map"].value
 local map_index = worlds[world_map].map_index
 local detail_factor = worlds[world_map].detail_factor
-local scale = settings.global["map-gen-scale"].value
+local scale = settings.global["fw_map-gen-scale"].value
 local spawn_settings = {
-    position = settings.global["spawn-position"].value,
-    custom_x = settings.global["spawn-x"].value,
-    custom_y = settings.global["spawn-y"].value
+    position = settings.global["fw_spawn-position"].value,
+    custom_x = settings.global["fw_custom-spawn-x"].value,
+    custom_y = settings.global["fw_custom-spawn-y"].value
 }
-local safe_zone_size = settings.global["safe-zone-size"].value
-local repeat_map = settings.global["repeat-map"].value
+local safe_zone_size = settings.global["fw_safe-zone-size"].value
+local repeat_map = settings.global["fw_repeat-map"].value
 
 local out_of_map_code = "o" -- The terrain to use for everything outside the map
 
@@ -74,7 +74,7 @@ local terrain_types = map_data[worlds[world_map].filename]
 local spawn = spawns[spawn_settings.position][map_index]
 --If 'custom' was chosen, use those values for x and y in the settings object, which are read from the UI
 if spawn_settings.position == "Custom (fill in x,y below)" then
-  log("~using custom spawns")
+  -- log("~using custom spawns")
   -- log("~custom_x : " .. spawn_settings.custom_x)
   -- log("~custom_y : " .. spawn_settings.custom_y)
   spawn = {
@@ -83,14 +83,17 @@ if spawn_settings.position == "Custom (fill in x,y below)" then
   }
 end
 
-log("~spawn.x: " .. spawn.x)
-log("~spawn.y: " .. spawn.y)
+-- log("~spawn.x: " .. spawn.x)
+-- log("~spawn.y: " .. spawn.y)
 
 --Scale spawn so it is roughly the same position on the map regardless of scale and wether you use detailed map
 spawn = {
-    x = scale * spawn.x * detail_factor,
-    y = scale * spawn.y * detail_factor
+    x = spawn.x * scale *  detail_factor,
+    y = spawn.y * scale * detail_factor
 }
+
+log("~scaled spawn.x: " .. spawn.x)
+log("~scaled spawn.y: " .. spawn.y)
 
 --The variable that will store the decompressed map
 local decompressed_map_data = {}

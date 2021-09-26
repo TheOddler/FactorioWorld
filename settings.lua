@@ -16,7 +16,7 @@ end
 data:extend({
     {
         type = "string-setting",
-        name = "world-map",
+        name = "fw_world-map",
         setting_type = "runtime-global",
         default_value = world_names[1],
         allowed_values = world_names,
@@ -24,7 +24,7 @@ data:extend({
     },
     {
         type = "double-setting",
-        name = "map-gen-scale",
+        name = "fw_map-gen-scale",
         setting_type = "runtime-global",
         minimum_value = 0.01,
         default_value = 6,
@@ -33,7 +33,7 @@ data:extend({
     },
     {
         type = "string-setting",
-        name = "spawn-position",
+        name = "fw_spawn-position",
         setting_type = "runtime-global",
         default_value = spawn_names[2],
         allowed_values = spawn_names,
@@ -41,28 +41,28 @@ data:extend({
     },
     {
         type = "double-setting",
-        name = "spawn-x",
+        name = "fw_custom-spawn-x",
         setting_type = "runtime-global",
         default_value = spawns[spawn_names[2]].earth_atlantic.x,
         order = "cx"
     },
     {
         type = "double-setting",
-        name = "spawn-y",
+        name = "fw_custom-spawn-y",
         setting_type = "runtime-global",
         default_value = spawns[spawn_names[2]].earth_atlantic.y,
         order = "cy"
     },
     {
         type = "bool-setting",
-        name = "repeat-map",
+        name = "fw_repeat-map",
         setting_type = "runtime-global",
         default_value = true,
         order = "d"
     },
     {
         type = "int-setting",
-        name = "safe-zone-size",
+        name = "fw_safe-zone-size",
         setting_type = "runtime-global",
         default_value = 5,
         order = "e"
