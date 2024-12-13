@@ -2,7 +2,7 @@
 
 A mod for factorio that changes the map into a real-world map.
 
-Note that it only changes the terrain, and not the spawning of resources. This is on my list of things to do, so maybe in the future!
+Note that it only changes the terrain, and not the spawning of resources.
 
 # Download
 
@@ -10,21 +10,75 @@ You can get this mod here: https://mods.factorio.com/mods/TheOddler/factorio-wor
 
 # Usage
 
-* Simply start a new game
-* Your world settings will be ignored, and the terrain replaced by the earth!
+* Start a new game
+* Choose your settings (more info below)
+* Map and terrain are generated from a map of Earth!
 
 # Settings
 
-Use the ingame mod settings to set:
+Use the in-game mod settings to set:
 
-* Map scale: Can be anything between 0.01 and infinite
+* Map scaling factor: Can be anything between 0.01 and infinite (factors of 6 work well)
 * Spawn:
     * Pick a location to start, or set to custom
     * When set to custom, it'll use the custom spawn x and y coordinates
 * Repeat map: If set to false everything after the first iteration will become water
 * Use large map: If set to true the mod will use a more detailed map
-    * This will use about 4 times the memory I think
+    * This will use about 4 times the memory
 * Safe zone size: All water within this zone will be turned into dirt
+
+# Available Spawn locations
+
+This is a list of the regions and cities (found in `spawns.lua`):
+
+| Continent      | Country/Region    | City         |
+|:---------------|:------------------|:-------------|
+| Europe         | Belgium           | My home town |
+| Africa         | Algeria           | Oran         |
+| Africa         | Chad              | Mongo        |
+| Africa         | Congo             | Katanga      |
+| Africa         | Egypt             | Cairo        |
+| Africa         | Equatorial Guinea | Ebebiyin     |
+| Africa         | Mali              | Bamako       |
+| Africa         | Morocco           | Marrakech    |
+| Africa         | Senegal           | Dakar        |
+| Africa         | South Africa      |Johannesburg  |
+| Asia           | China             | Baoshan      |
+| Asia           | China             | Beijing      |
+| Asia           | China             | Kunming      |
+| Asia           | Georgia           | Tbilisi      |
+| Asia           | India             | Delhi        |
+| Asia           | Mongolia          | Moron        |
+| Asia           | Russia            | Aktobe       |
+| Asia           | Russia            | Anadyr       |
+| Asia           | Russia            | Bilibino     |
+| Asia           | Russia            | Omsk         |
+| Asia           | Russia            | Yakutsk      |
+| Asia           | Saudi Arabia      | Riyadh       |
+| Europe         | Czech Republic    | Prague       |
+| Europe         | Norway            | Oslo         |
+| Europe         | Russia            | Moscow       |
+| Europe         | Russia            | Pechora      |
+| Europe         | Spain             | Madrid       |
+| Europe         | UK                | London       |
+| North America  | Canada            | Brisay       |
+| North America  | Canada            | Kapuskasing  |
+| North America  | Canada            | Saskatoon    |
+| North America  | Greenland         | Summit Camp  |
+| North America  | Mexico            | Mexico City  |
+| North America  | United States     | Boise        |
+| North America  | United States     | Los Angeles  |
+| North America  | United States     | New York     |
+| North America  | United States     | Nome         |
+| North America  | United States     | Scranton     |
+| North America  | United States     | Topeka       |
+| North America  | United States     | Ungalik      |
+| Oceania        | Australia         | Broome       |
+| Oceania        | Australia         | Sydney       |
+| South America  | Argentina         | Cordoba      |
+| South America  | Brazil            | Manaus       |
+| South America  | Brazil            | Sao Paulo    |
+| South America  | Peru              | Lima         |
 
 # Generating your own maps
 
