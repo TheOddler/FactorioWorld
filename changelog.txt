@@ -1,0 +1,24 @@
+﻿---------------------------------------------------------------------------------------------------
+Version: 2.0.2
+Date: 2025-01-24
+
+  Features:
+    - Added support to generate earth landscape on planet or surface named "earth".
+    - When "Only generate on Earth" is enabled in startup setting, Nauvis will no longer generate with earth landscape.
+    - Added support to create Planet Earth when "Only generate on Earth" is enabled in space age and Planet Earth is missing. 
+
+---------------------------------------------------------------------------------------------------
+Version: 2.0.1
+Date: 2024-12-13
+
+  Changes:
+    - Added thumbnail    
+
+---------------------------------------------------------------------------------------------------
+Version: 2.0.0
+Date: 2024-12-13
+
+  Changes:
+    - Factorio 2.0 update
+    - Added additional spawn locations.
+    - minor clean up

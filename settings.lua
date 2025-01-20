@@ -59,4 +59,11 @@ data:extend({
         default_value = 5,
         order = "e"
     },
+    {
+        type = "bool-setting",
+        name = "only-apply-to-earth",
+        setting_type = "startup",
+        default_value = false,
+        order = "a"
+    }
 })
