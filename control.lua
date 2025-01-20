@@ -173,12 +173,23 @@ local function get_world_tile_name(x, y)
     return terrain_name
 end
 
+local valid_earth_surfaces = {
+    nauvis = true,
+    earth = true
+}
+
+if settings.startup['only-apply-to-earth'].value then
+    valid_earth_surfaces = {
+        earth = true
+    }
+end
+
 --Chunk generation code
 local function on_chunk_generated(event)
-    if (event.surface.name ~= "nauvis") then
-        return
+    if not valid_earth_surfaces[event.surface.name] then
+        return 
     end
-
+    
     local surface = event.surface
     local lt = event.area.left_top
     local rb = event.area.right_bottom
