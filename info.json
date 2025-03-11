@@ -1,6 +1,6 @@
 {
   "name": "factorio-world",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "title": "Factorio World",
   "author": "The Oddler",
   "contact": "pablo.bollansee@gmail.com",
@@ -8,6 +8,7 @@
   "description": "Mod that changes the world generation to be a real-world map. This mod only overrides the generated tiles. Ore, biters, trees and other entities will still be randomly generated.",
   "factorio_version": "2.0",
   "dependencies": [
-    "base >= 2.0"
+    "base >= 2.0",
+    "(?) alien-biomes >= 0.7.2"
   ]
 }

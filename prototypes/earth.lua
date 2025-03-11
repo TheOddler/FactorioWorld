@@ -75,24 +75,4 @@ if not planet_earth then
             }
         },
     })
-
-    if mods['alien-biomes'] then
-        -- Copied from ERM planet.
-        -- alien-biomes wipes autoplace spec from them and cause the game to crash. 
-        local planet = data.raw.planet.earth
-        local map_gen = planet.map_gen_settings
-        map_gen.autoplace_settings.decorative.settings['medium-rock'] = nil
-        map_gen.autoplace_settings.decorative.settings['small-rock'] = nil
-        map_gen.autoplace_settings.decorative.settings['tiny-rock'] = nil
-        map_gen.autoplace_settings.decorative.settings['small-sand-rock'] = nil
-
-        map_gen.autoplace_settings.decorative.settings['medium-sand-rock'] = nil
-        map_gen.autoplace_settings.decorative.settings['sand-dune-decal'] = nil
-
-        map_gen.autoplace_settings.entity.settings['huge-rock'] = nil
-        map_gen.autoplace_settings.entity.settings['big-rock'] = nil
-        map_gen.autoplace_settings.entity.settings['big-sand-rock'] = nil
-
-        map_gen.autoplace_controls.rocks = nil
-    end
 end
