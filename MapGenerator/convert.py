@@ -46,7 +46,7 @@ if resize_width:
     width, height = image.size
     resize_height = int(float(height)*float(resize_width / float(width)))
     print(f"Resizing image from {width}, {height} to {resize_width}, {resize_height}...")
-    large_image = image.resize((resize_width, resize_height), Image.ANTIALIAS)
+    large_image = image.resize((resize_width, resize_height), Image.LANCZOS)
 else:
     large_image = image
 
@@ -55,7 +55,7 @@ width, height = large_image.size
 small_width = int(width / 2)
 small_height = int(height / 2)
 print(f"Creating small image with size {small_width}, {small_height}...")
-small_image = image.resize((small_width, small_height), Image.ANTIALIAS)
+small_image = image.resize((small_width, small_height), Image.LANCZOS)
 
 def get_terrain_letter(pixel):
     min_dist = float("inf")
