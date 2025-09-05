@@ -34,6 +34,24 @@ local repeat_map = settings.global["repeat-map"].value
 local out_of_map_code = "o" -- The terrain to use for everything outside the map
 
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
+    if event.setting_type ~= "runtime-global" or event.setting == nil or event.setting == '' then
+	    return
+	end
+
+    local observe_factorio_world_settings = {
+        ["map-gen-scale"] = (event.setting == "map-gen-scale"),
+        ["spawn-position"] = (event.setting == "spawn-position"),
+        ["spawn-x"] = (event.setting == "spawn-x"),
+        ["spawn-y"] = (event.setting == "spawn-y"),
+        ["safe-zone-size"] = (event.setting == "safe-zone-size"),
+        ["repeat-map"] = (event.setting == "repeat-map"),
+        ["use-large-map"] = (event.setting == "use-large-map")
+    }
+	
+	if not observe_factorio_world_settings[event.setting] then
+        return
+	end
+
     game.print("You shouldn't change the world-gen settings after you started a savegame. This will break the generating for new parts of the map.")
     game.print("The change is ignored for now, but will take effect when restarting the game.")
     game.print("Return them to what they were, or risk smegging up your save!")
@@ -42,6 +60,7 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
     game.print("spawn: " .. spawn_settings.position .. "; x = " .. spawn_settings.x .. ", y = " .. spawn_settings.y)
     game.print("Use large map = " .. (use_large_map and "true" or "false"))
     game.print("Repeat map = " .. (repeat_map and "true" or "false"))
+	game.print("Safe zone size = " .. safe_zone_size)
 end)
 
 --Get correct world
