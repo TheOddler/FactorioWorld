@@ -12,6 +12,7 @@ spawns = {
     ["Africa, Morocco, Marrakech"] = { x = 1920, y =  640 },
     ["Africa, Senegal, Dakar"] = { x = 1860, y = 810 },
     ["Africa, South Africa, Johannesburg"] = { x = 2335, y = 1260 },
+    ["Asia, Korea, Seoul"] = { x = 3440, y = 560 },
     ["Asia, China, Baoshan"] = { x = 3160, y = 727 },
     ["Asia, China, Beijing"] = { x = 3335, y = 510 },
     ["Asia, China, Kunming"] = { x = 3150, y =  700 },
