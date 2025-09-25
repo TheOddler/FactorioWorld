@@ -18,6 +18,27 @@ local terrain_codes = {
     ["S"] = "sand-3"
 }
 
+local safe_zone_terran = 'sand-1'
+
+if script.active_mods['alien-biomes'] then
+    terrain_codes = {
+        ["_"] = "out-of-map",
+        ["o"] = "deepwater",--ocean
+        ["O"] = "deepwater-green",
+        ["w"] = "water",
+        ["W"] = "water-green",
+        ["g"] = "vegetation-green-grass-1",
+        ["m"] = "vegetation-green-grass-2",
+        ["G"] = "vegetation-green-grass-3",
+        ["d"] = "mineral-tan-dirt-3",
+        ["D"] = "mineral-tan-dirt-5",
+        ["s"] = "mineral-brown-sand-1",
+        ["S"] = "mineral-brown-sand-3"
+    }
+    
+    safe_zone_terran = "mineral-brown-sand-1"
+end
+
 ----
 --Don't touch anything under this, unless you know what you're doing
 ----
@@ -187,7 +208,7 @@ local function get_world_tile_name(x, y)
     local terrain_name = terrain_codes[code]
     --safezone
     if (safe_zone or space_ship) and string.match(terrain_name, "water") then
-        terrain_name = "sand-1"
+        terrain_name = safe_zone_terran
     end
     return terrain_name
 end

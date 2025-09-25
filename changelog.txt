@@ -1,4 +1,11 @@
-﻿Version: 2.1.2
+﻿Version: 2.1.3
+Date: 2025-09-25
+
+  Bugfixes:
+    - Fixed alien-biomes compatibility issue which the world were unable to generate trees and rocks.
+    
+---------------------------------------------------------------------------------------------------
+Version: 2.1.2
 Date: 2025-09-08
 
   Bugfixes:
