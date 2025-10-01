@@ -208,7 +208,7 @@ local function get_world_tile_name(x, y)
     local terrain_name = terrain_codes[code]
     --safezone
     if (safe_zone or space_ship) and string.match(terrain_name, "water") then
-        terrain_name = safe_zone_terran
+        terrain_name = safe_zone_terrain
     end
     return terrain_name
 end
