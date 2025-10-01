@@ -18,7 +18,7 @@ local terrain_codes = {
     ["S"] = "sand-3"
 }
 
-local safe_zone_terran = 'sand-1'
+local safe_zone_terrain = 'sand-1'
 
 if script.active_mods['alien-biomes'] then
     terrain_codes = {
@@ -35,8 +35,8 @@ if script.active_mods['alien-biomes'] then
         ["s"] = "mineral-brown-sand-1",
         ["S"] = "mineral-brown-sand-3"
     }
-    
-    safe_zone_terran = "mineral-brown-sand-1"
+
+    safe_zone_terrain = "mineral-brown-sand-1"
 end
 
 ----
