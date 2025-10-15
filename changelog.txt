@@ -3,6 +3,7 @@ Date: 2025-09-25
 
   Bugfixes:
     - Fixed alien-biomes compatibility issue which the world were unable to generate trees and rocks.
+    - Fixed an earth planet prototype issue.
     
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.2

@@ -1,4 +1,4 @@
-﻿if not feature_flags.space_travel or not settings.startup['only-apply-to-earth'].value then
+﻿if not mods['space-age'] or not settings.startup['only-apply-to-earth'].value then
     return
 end
 
