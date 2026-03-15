@@ -251,3 +251,37 @@ local function on_chunk_generated(event)
 end
 
 script.on_event(defines.events.on_chunk_generated, on_chunk_generated)
+
+local RemoteInterface = {}
+RemoteInterface.has_town_spawn_point = function(surface, area)
+    if not valid_earth_surfaces[surface.name] then
+        return false
+    end
+
+    if area.left_top.x >= -safe_zone_size and area.left_top.x < safe_zone_size and area.left_top.y >= -safe_zone_size and area.left_top.y < safe_zone_size then
+        return false
+    end
+    
+    local top_x = math.floor((area.left_top.x + spawn.x) / scale) % width
+    local top_y = math.floor((area.left_top.y + spawn.y) / scale) % height
+    local bottom_x = math.floor((area.right_bottom.x + spawn.x) / scale) % width
+    local bottom_y = math.floor((area.right_bottom.y + spawn.y) / scale) % height
+
+    for _, spawn_loc in pairs(spawns) do
+        if spawn_loc.x and spawn_loc.y and
+                top_x <= spawn_loc.x and spawn_loc.x < bottom_x and
+                top_y <= spawn_loc.y and spawn_loc.y < bottom_y
+        then
+            return true
+        end
+    end
+    
+    return false
+end
+RemoteInterface.is_factorio_world_surface = function(surface)
+    return valid_earth_surfaces[surface.name]
+end
+RemoteInterface.get_world_tile_name = function(x, y)
+    return get_world_tile_name(x, y)
+end
+remote.add_interface('factorio-world',RemoteInterface)
