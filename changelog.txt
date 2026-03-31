@@ -1,4 +1,14 @@
 ﻿---------------------------------------------------------------------------------------------------
+Version: 2.1.5
+Date: 2026-03-15
+
+  Changes:
+    - Added remote.call('factorio-world','has_spawn_point', luaSurface, area) to checks whether the chunk contains a spawn point from spawns.lua.
+    - Added remote.call('factorio-world','get_world_tile_name',x, y) to get tile name
+    - Added remote.call('factorio-world','is_factorio_world_surface', luaSurface) to check whether the surface is using earth layout.
+    - Added many cities to spawn city selector.
+
+---------------------------------------------------------------------------------------------------
 Version: 2.1.4
 Date: 2025-10-19
 
@@ -12,7 +22,7 @@ Date: 2025-09-25
   Bugfixes:
     - Fixed alien-biomes compatibility issue which the world were unable to generate trees and rocks.
     - Fixed an earth planet prototype issue.
-    
+
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.2
 Date: 2025-09-08

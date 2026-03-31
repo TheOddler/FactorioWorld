@@ -31,54 +31,95 @@ Use the in-game mod settings to set:
 
 This is a list of the regions and cities (found in `spawns.lua`):
 
-| Continent      | Country/Region    | City         |
-|:---------------|:------------------|:-------------|
-| Europe         | Belgium           | My home town |
-| Africa         | Algeria           | Oran         |
-| Africa         | Chad              | Mongo        |
-| Africa         | Congo             | Katanga      |
-| Africa         | Egypt             | Cairo        |
-| Africa         | Equatorial Guinea | Ebebiyin     |
-| Africa         | Mali              | Bamako       |
-| Africa         | Morocco           | Marrakech    |
-| Africa         | Senegal           | Dakar        |
-| Africa         | South Africa      |Johannesburg  |
-| Asia           | China             | Baoshan      |
-| Asia           | China             | Beijing      |
-| Asia           | China             | Kunming      |
-| Asia           | Georgia           | Tbilisi      |
-| Asia           | India             | Delhi        |
-| Asia           | Mongolia          | Moron        |
-| Asia           | Russia            | Aktobe       |
-| Asia           | Russia            | Anadyr       |
-| Asia           | Russia            | Bilibino     |
-| Asia           | Russia            | Omsk         |
-| Asia           | Russia            | Yakutsk      |
-| Asia           | Saudi Arabia      | Riyadh       |
-| Europe         | Czech Republic    | Prague       |
-| Europe         | Norway            | Oslo         |
-| Europe         | Russia            | Moscow       |
-| Europe         | Russia            | Pechora      |
-| Europe         | Spain             | Madrid       |
-| Europe         | UK                | London       |
-| North America  | Canada            | Brisay       |
-| North America  | Canada            | Kapuskasing  |
-| North America  | Canada            | Saskatoon    |
-| North America  | Greenland         | Summit Camp  |
-| North America  | Mexico            | Mexico City  |
-| North America  | United States     | Boise        |
-| North America  | United States     | Los Angeles  |
-| North America  | United States     | New York     |
-| North America  | United States     | Nome         |
-| North America  | United States     | Scranton     |
-| North America  | United States     | Topeka       |
-| North America  | United States     | Ungalik      |
-| Oceania        | Australia         | Broome       |
-| Oceania        | Australia         | Sydney       |
-| South America  | Argentina         | Cordoba      |
-| South America  | Brazil            | Manaus       |
-| South America  | Brazil            | Sao Paulo    |
-| South America  | Peru              | Lima         |
+| Continent        | Country/Region         | City              |
+|:-----------------|:-----------------------|:------------------|
+| Europe           | Belgium                | My home town      |
+| Africa           | Algeria                | Oran              |
+| Africa           | Chad                   | Mongo             |
+| Africa           | Congo                  | Katanga           |
+| Africa           | Egypt                  | Cairo             |
+| Africa           | Equatorial Guinea      | Ebebiyin          |
+| Africa           | Ethiopia               | Dire Dawa         |
+| Africa           | Libya                  | Tripoli           |
+| Africa           | Mali                   | Bamako            |
+| Africa           | Morocco                | Marrakech         |
+| Africa           | Senegal                | Dakar             |
+| Africa           | South Africa           | Johannesburg      |
+| Africa           | Madagascar             | Antananarivo      |
+| Asia             | Afghanistan            | Kabul             |
+| Asia             | Bangladesh             | Dhaka             |
+| Asia             | China                  | Baoshan           |
+| Asia             | China                  | Beijing           |
+| Asia             | China                  | ChongQing         |
+| Asia             | China                  | GuangZhou         |
+| Asia             | China                  | Jiayuguan         |
+| Asia             | China                  | Kunming           |
+| Asia             | China                  | Lhasa             |
+| Asia             | China                  | Nanjing           |
+| Asia             | China                  | Urumqi            |
+| Asia             | Georgia                | Tbilisi           |
+| Asia             | India                  | Bengaluru         |
+| Asia             | India                  | Delhi             |
+| Asia             | India                  | Nagpur            |
+| Asia             | Iran                   | Tehran            |
+| Asia             | Iraq                   | Baghdad           |
+| Asia             | Japan                  | Tokyo             |
+| Asia             | Korea                  | Seoul             |
+| Asia             | Mongolia               | Moron             |
+| Asia             | Pakistan               | Hyderabad         |
+| Asia             | Russia                 | Aktobe            |
+| Asia             | Russia                 | Anadyr            |
+| Asia             | Russia                 | Bilibino          |
+| Asia             | Russia                 | Omsk              |
+| Asia             | Russia                 | Yakutsk           |
+| Asia             | Thailand               | Bangkok           |
+| Asia             | Turkiye                | Ankara            |
+| Asia             | Saudi Arabia           | Riyadh            |
+| Asia             | Vietnam                | Ho Chi Minh City  |
+| Asia             | Yemen                  | Sanaa             |
+| Europe           | Czech Republic         | Prague            |
+| Europe           | Finland                | Tampere           |
+| Europe           | Italy                  | Milan             |
+| Europe           | Norway                 | Oslo              |
+| Europe           | Russia                 | Moscow            |
+| Europe           | Russia                 | Pechora           |
+| Europe           | Serbia                 | Belgrade          |
+| Europe           | Spain                  | Madrid            |
+| Europe           | UK                     | London            |
+| Europe           | Ukraine                | Kyiv              |
+| North America    | Canada                 | Banff             |
+| North America    | Canada                 | Brisay            |
+| North America    | Canada                 | Fredericton       |
+| North America    | Canada                 | Kapuskasing       |
+| North America    | Canada                 | Saskatoon         |
+| North America    | Canada                 | Ottawa            |
+| North America    | Canada                 | Whitehorse        |
+| North America    | Canada                 | Winnipeg          |
+| North America    | Greenland              | Summit Camp       |
+| North America    | Mexico                 | Mexico City       |
+| North America    | United States          | Boise             |
+| North America    | United States          | Charlotte         |
+| North America    | United States          | Denver            |
+| North America    | United States          | Los Angeles       |
+| North America    | United States          | New York          |
+| North America    | United States          | Nome              |
+| North America    | United States          | Orlando           |
+| North America    | United States          | San Antonio       |
+| North America    | United States          | Scranton          |
+| North America    | United States          | Topeka            |
+| North America    | United States          | Ungalik           |
+| Oceania          | Australia              | Broome            |
+| Oceania          | Australia              | Perth             |
+| Oceania          | Australia              | Mount Isa City    |
+| Oceania          | Australia              | Sydney            |
+| South America    | Argentina              | Cordoba           |
+| South America    | Argentina              | Rio Gallegos      |
+| South America    | Bolivia                | Cochabamba        |
+| South America    | Brazil                 | Juazeiro do Norte |
+| South America    | Brazil                 | Manaus            |
+| South America    | Brazil                 | Sao Paulo         |
+| South America    | Peru                   | Lima              |
+| South America    | Venezuela              | Barquisimeto      |
 
 # Generating your own maps
 
