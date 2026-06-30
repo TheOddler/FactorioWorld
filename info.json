@@ -8,7 +8,7 @@
   "description": "Mod that changes the world generation to be a real-world map. This mod only overrides the generated tiles. Ore, biters, trees and other entities will still be randomly generated.",
   "factorio_version": "2.1",
   "dependencies": [
-    "base >= 2.0",
+    "base >= 2.1",
     "(?) alien-biomes >= 0.7.4"
   ]
 }
